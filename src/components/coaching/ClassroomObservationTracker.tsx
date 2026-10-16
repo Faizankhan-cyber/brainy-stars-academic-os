@@ -13,7 +13,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ClassroomObservation, BranchCode } from '../../types/baos';
-import { SAMPLE_OBSERVATIONS, SAMPLE_TEACHERS } from '../../data/baosSampleData';
+import { useSchool } from '../../context/SchoolContext';
 
 interface ClassroomObservationTrackerProps {
   currentBranch: BranchCode | 'ALL';
@@ -22,7 +22,7 @@ interface ClassroomObservationTrackerProps {
 export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerProps> = ({
   currentBranch,
 }) => {
-  const [observations, setObservations] = useState<ClassroomObservation[]>(SAMPLE_OBSERVATIONS);
+  const { classroomObservations, addObservation, teachers } = useSchool();
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [selectedObservation, setSelectedObservation] = useState<ClassroomObservation | null>(null);
 
@@ -41,7 +41,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
     grows: '',
   });
 
-  const filteredObservations = observations.filter((obs) => {
+  const filteredObservations = classroomObservations.filter((obs) => {
     return currentBranch === 'ALL' || obs.branch === currentBranch;
   });
 
@@ -73,7 +73,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
       nextFollowUpDate: '2026-11-15',
     };
 
-    setObservations([newObs, ...observations]);
+    addObservation(newObs);
     setIsScheduleModalOpen(false);
   };
 
@@ -81,7 +81,12 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-navy-900">Classroom Observation Tracker</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-navy-950">Classroom Observation Tracker</h2>
+            <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[10px] font-bold text-teal-800 border border-teal-200">
+              {filteredObservations.length} Recorded Walkthroughs
+            </span>
+          </div>
           <p className="text-xs text-slate-500">
             Formative developmental peer-observations assessing Montessori prepared environments, student inquiry, and Islamic values integration.
           </p>
@@ -89,7 +94,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
 
         <button
           onClick={() => setIsScheduleModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-teal-700 transition"
+          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-700 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Log Observation Walkthrough</span>
@@ -111,7 +116,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
           return (
             <div
               key={obs.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 hover:border-teal-400 transition"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4 hover:border-teal-400 transition"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div className="space-y-0.5">
@@ -219,7 +224,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
 
       {/* Schedule Observation Modal */}
       {isScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/70 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
             <button
               onClick={() => setIsScheduleModalOpen(false)}
@@ -244,7 +249,7 @@ export const ClassroomObservationTracker: React.FC<ClassroomObservationTrackerPr
                     className="w-full rounded-lg border border-slate-200 p-2 text-slate-800"
                   >
                     <option value="">-- Select Teacher --</option>
-                    {SAMPLE_TEACHERS.map((t) => (
+                    {teachers.map((t) => (
                       <option key={t.id} value={t.name}>
                         {t.name} ({t.branch})
                       </option>

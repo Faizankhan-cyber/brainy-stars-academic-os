@@ -8,9 +8,10 @@ import {
   Filter,
   User,
   X,
+  Info,
 } from 'lucide-react';
 import { LeadershipActionItem, BranchCode } from '../../types/baos';
-import { SAMPLE_ACTION_ITEMS } from '../../data/baosSampleData';
+import { useSchool } from '../../context/SchoolContext';
 
 interface PendingActionsFollowUpProps {
   currentBranch: BranchCode | 'ALL';
@@ -19,7 +20,7 @@ interface PendingActionsFollowUpProps {
 export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
   currentBranch,
 }) => {
-  const [items, setItems] = useState<LeadershipActionItem[]>(SAMPLE_ACTION_ITEMS);
+  const { leadershipActionItems, toggleLeadershipAction, addLeadershipAction } = useSchool();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -30,22 +31,9 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
     dueDate: '2026-10-30',
   });
 
-  const filteredItems = items.filter((item) => {
+  const filteredItems = leadershipActionItems.filter((item) => {
     return currentBranch === 'ALL' || item.branch === currentBranch;
   });
-
-  const handleToggleStatus = (id: string) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const nextStatus: LeadershipActionItem['status'] =
-            item.status === 'Closed' ? 'In Progress' : 'Closed';
-          return { ...item, status: nextStatus };
-        }
-        return item;
-      })
-    );
-  };
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +50,7 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
       status: 'In Progress',
     };
 
-    setItems([newItem, ...items]);
+    addLeadershipAction(newItem);
     setIsAddModalOpen(false);
   };
 
@@ -70,7 +58,12 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-navy-900">Pending Actions & Follow-ups</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-navy-950">Pending Actions & Follow-ups</h2>
+            <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[10px] font-bold text-teal-800 border border-teal-200">
+              {filteredItems.filter((i) => i.status !== 'Closed').length} Active Items
+            </span>
+          </div>
           <p className="text-xs text-slate-500">
             Institutional task board governing regulatory compliance, faculty coaching sign-offs, and critical escalations.
           </p>
@@ -78,7 +71,7 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-teal-700 transition"
+          className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-700 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Create Leadership Action</span>
@@ -89,7 +82,7 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
         {filteredItems.map((item) => (
           <div
             key={item.id}
-            className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border p-5 shadow-sm transition ${
+            className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border p-5 shadow-xs transition ${
               item.status === 'Closed'
                 ? 'border-slate-200 bg-slate-50/60 opacity-75'
                 : 'border-slate-200 bg-white hover:border-teal-400'
@@ -136,7 +129,7 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
 
             <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
               <button
-                onClick={() => handleToggleStatus(item.id)}
+                onClick={() => toggleLeadershipAction(item.id)}
                 className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5 ${
                   item.status === 'Closed'
                     ? 'border border-slate-200 text-slate-600 hover:bg-slate-100'
@@ -153,7 +146,7 @@ export const PendingActionsFollowUp: React.FC<PendingActionsFollowUpProps> = ({
 
       {/* Add Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/70 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
             <button
               onClick={() => setIsAddModalOpen(false)}

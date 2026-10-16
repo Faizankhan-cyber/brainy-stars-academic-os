@@ -45,17 +45,26 @@ export interface Branch {
 
 /* ================== OPERATIONS ================== */
 
+export type TeacherGradeBracket =
+  | 'Mother Teacher (Grades 1-2)'
+  | 'Grades 3-5'
+  | 'Grades 6-10'
+  | 'Montessori Pre-Primary';
+
 export interface Teacher {
   id: string;
   code: string;
   name: string;
   branch: BranchCode;
-  designation: string; // e.g. "Senior Montessori Guide", "CBSE Science Lead", "Mathematics Faculty"
+  designation: string;
   department: 'Montessori Primary' | 'CBSE Primary' | 'Middle School' | 'Secondary School' | 'Islamic & Value Studies';
   qualification: string;
   experienceYears: number;
+  gradeBracket: TeacherGradeBracket;
   assignedClasses: string[];
   subjects: string[];
+  approvedSubstituteSubjects: string[];
+  timetableSchedule: Record<number, string | null>; // period 1..6: class name or null if free
   weeklyPeriods: number;
   contactNumber: string;
   email: string;
@@ -77,6 +86,16 @@ export interface TeacherAttendance {
   remarks?: string;
 }
 
+export interface SubstitutionRuleEvaluation {
+  teacherId: string;
+  teacherName: string;
+  isEligible: boolean;
+  matchTier: 'Subject Specialist (Priority 1)' | 'Approved Subject Substitute (Priority 2)' | 'General Eligible Substitute (Priority 3)' | 'Ineligible';
+  disqualificationReason?: string;
+  isFreePeriod: boolean;
+  attendanceStatus: 'Present' | 'Absent' | 'On Duty' | 'Late' | 'Half Day';
+}
+
 export interface SubstitutionRequest {
   id: string;
   date: string;
@@ -85,31 +104,91 @@ export interface SubstitutionRequest {
   branch: BranchCode;
   period: number;
   timing: string;
-  grade: string;
+  grade: string; // e.g. "Grade 4", "Grade 7", "Grade 1"
   section: string;
+  gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10';
   subject: string;
   assignedSubstituteTeacherId?: string;
   assignedSubstituteTeacherName?: string;
+  assignedRuleTier?: string;
   status: 'Assigned' | 'Pending Allocation' | 'Free Period Approved';
   priority: 'Urgent' | 'Normal';
-  suggestedFreeTeachers: string[];
+  evaluations: SubstitutionRuleEvaluation[];
 }
 
 export interface DailyAcademicReport {
   id: string;
   branch: BranchCode;
   date: string;
+  academicYear: string;
+  term: string;
   submittedBy: string;
   submissionTime: string;
-  totalClassesScheduled: number;
-  classesConducted: number;
-  substitutionsHandled: number;
-  montessoriWorkPeriodCompleted: boolean;
-  quranicRecitationConducted: boolean;
-  keyHighlights: string;
-  operationalBottlenecks: string;
-  principalRemarks?: string;
   status: 'Verified' | 'Pending Review' | 'Flagged';
+
+  // Section 1: Attendance
+  attendanceSummary: {
+    studentEnrolled: number;
+    studentPresent: number;
+    studentAttendancePercent: number;
+    facultyTotal: number;
+    facultyPresent: number;
+    facultyAttendancePercent: number;
+  };
+
+  // Section 2: Events & Celebrations
+  eventsAndCelebrations: string;
+
+  // Section 3: RRR Sessions
+  rrrSessionsSummary: {
+    tier: string;
+    grade: string;
+    subject: string;
+    concept: string;
+    studentCount: number;
+  }[];
+
+  // Section 4: Classroom Observations
+  classroomObservationsSummary: {
+    teacherName: string;
+    grade: string;
+    subject: string;
+    overallRating: string;
+  }[];
+
+  // Section 5: Grade 9 and 10 Support Sessions
+  grade9And10SupportSummary: {
+    grade: string;
+    subject: string;
+    topic: string;
+    mentor: string;
+    attended: number;
+  }[];
+
+  // Section 6: Syllabus Completion
+  syllabusCompletionHighlights: {
+    grade: string;
+    subject: string;
+    chapter: string;
+    status: string;
+  }[];
+
+  // Section 7: Teacher Discussion & DDR Verification
+  teacherDiscussionAndDDR: {
+    ddrVerified: boolean;
+    verificationNotes: string;
+  };
+
+  // Section 8: Branch Visits
+  branchVisits: string;
+
+  // Section 9: Additional Work & Infrastructure
+  additionalWork: string;
+
+  // Section 10: Closing Message
+  closingMessage: string; // "Jazakallahu Khairan."
+
+  principalRemarks?: string;
 }
 
 /* ================== COACHING ================== */
@@ -132,8 +211,8 @@ export interface ClassroomObservation {
     valueIntegration: number; // 1-5
     timeManagement: number; // 1-5
   };
-  glows: string; // What went well
-  grows: string; // Actionable areas for improvement
+  glows: string;
+  grows: string;
   overallRating: 'Exceeds Standards' | 'Proficient' | 'Needs Coaching Support';
   nextFollowUpDate: string;
 }
@@ -145,7 +224,7 @@ export interface CoachingPlan {
   branch: BranchCode;
   coachName: string;
   cycle: 'Q1 2026' | 'Q2 2026' | 'Q3 2026';
-  targetSkill: string; // e.g. "Three-Period Lesson Execution", "NEP Inquiry Science", "Differentiated Math Support"
+  targetSkill: string;
   smartGoal: string;
   actionSteps: string[];
   resourcesProvided: string[];
@@ -179,7 +258,7 @@ export interface SyllabusProgress {
   totalChapters: number;
   completedChapters: number;
   plannedChaptersToDate: number;
-  lagOrLeadWeeks: number; // 0 = on track, -1 = 1 week behind, +1 = 1 week ahead
+  lagOrLeadWeeks: number;
   status: 'On Track' | 'Delayed' | 'Ahead of Schedule';
   lastLessonLogged: string;
 }
@@ -215,7 +294,7 @@ export interface SupportSession {
 }
 
 export interface RRRSession {
-  id: string; // Remedial, Revision, Retention
+  id: string;
   tier: 'Remedial (R1)' | 'Revision (R2)' | 'Retention & Mastery (R3)';
   grade: string;
   subject: string;
@@ -224,7 +303,7 @@ export interface RRRSession {
   leadTeacher: string;
   date: string;
   studentCount: number;
-  masteryAttainmentRate: number; // e.g. 88%
+  masteryAttainmentRate: number;
   status: 'Completed' | 'Scheduled';
 }
 
@@ -237,7 +316,7 @@ export interface PTMRecord {
   meetingDate: string;
   scheduledSlots: number;
   attendedSlots: number;
-  averageParentRating: number; // out of 5
+  averageParentRating: number;
   status: 'Completed' | 'Scheduled';
   coordinator: string;
   agenda: string;
@@ -285,4 +364,11 @@ export interface LeadershipActionItem {
   dueDate: string;
   priority: 'Critical' | 'High' | 'Routine';
   status: 'Pending Review' | 'In Progress' | 'Awaiting Approval' | 'Closed';
+}
+
+export interface SystemConfiguration {
+  academicYear: string;
+  term: 'Term 1' | 'Term 2';
+  selectedDate: string;
+  selectedCampus: BranchCode | 'ALL';
 }

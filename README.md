@@ -4,9 +4,9 @@ An institutional Academic Operating System built for **Brainy Stars Holistic Mon
 
 ---
 
-## 🏛️ System Architecture
+## 🏛️ System Architecture & Scope
 
-BAOS is engineered with a modular, component-based React and TypeScript architecture designed for clean extensibility, zero ongoing hosting overhead, and future integration with Firebase Authentication and Cloud Firestore.
+BAOS is engineered with a modular React 18 + TypeScript architecture backed by a unified in-memory context store (`SchoolContext`), ensuring complete mathematical consistency across all dashboards, rosters, and operational logs.
 
 ```
 /
@@ -15,27 +15,30 @@ BAOS is engineered with a modular, component-based React and TypeScript architec
 ├── package.json                 # Dependency manifests & scripts
 ├── tsconfig.json                # TypeScript bundler configuration
 ├── tailwind.config.js           # Navy, white, and teal design system
+├── .env.example                 # Future environment variable template
 ├── src/
 │   ├── main.tsx                 # React DOM mount point
 │   ├── App.tsx                  # Core app router & layout orchestrator
 │   ├── index.css                # Global Tailwind directives & typography
+│   ├── context/
+│   │   └── SchoolContext.tsx    # Single source of truth & state management
 │   ├── types/
 │   │   ├── baos.ts              # Core domain models (Teachers, DAR, Observations, etc.)
 │   │   └── index.ts             # Supporting scholastic & assessment interfaces
 │   ├── data/
-│   │   ├── baosSampleData.ts    # Fictional demonstration dataset for 4 campuses
+│   │   ├── baosSampleData.ts    # Central fictional demonstration dataset
 │   │   └── mockData.ts          # Sample scholastic marks & rubrics
 │   └── components/
 │       ├── Header.tsx           # Top navigation bar, campus switcher, user profile
 │       ├── Sidebar.tsx          # Collapsible 7-section navigation
 │       ├── dashboard/
-│       │   └── HomeDashboard.tsx            # KPI cards, recent activity, pending items
+│       │   └── HomeDashboard.tsx            # Mathematically consistent KPI cards
 │       ├── operations/
-│       │   ├── TeacherMasterDatabase.tsx    # Central faculty directory & profiles
-│       │   ├── TeacherAttendanceView.tsx    # Real-time attendance & roll-call toggle
+│       │   ├── TeacherMasterDatabase.tsx    # Central faculty directory with grade brackets
+│       │   ├── TeacherAttendanceView.tsx    # Live attendance registry & roll-call toggle
 │       │   ├── TimetableManagement.tsx      # Weekly timetable & period matrix
-│       │   ├── SubstitutionEngine.tsx       # Smart free-period matching & allocation
-│       │   ├── DailyAcademicReportView.tsx  # Daily Academic Report (DAR) submission
+│       │   ├── SubstitutionEngine.tsx       # Rule-based substitution engine (5 rules)
+│       │   ├── DailyAcademicReportView.tsx  # Full 10-section end-of-day DAR report
 │       │   └── BranchOperationsView.tsx     # Campus operational comparison
 │       ├── coaching/
 │       │   ├── ClassroomObservationTracker.tsx # 5-domain observation walkthroughs
@@ -65,41 +68,56 @@ BAOS is engineered with a modular, component-based React and TypeScript architec
 
 ---
 
-## 🚀 Getting Started
+## ⚖️ Substitution Rules Specification
 
-### Prerequisites
-- Node.js v20+ or v22+
-- npm v10+
+The substitution engine implements 5 strict institutional constraints:
 
-### Installation & Development
-1. Install project dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Start the local development server:
-   ```bash
-   npm run dev
-   ```
-   The application will be accessible at `http://localhost:3000`.
-
-3. Build for production:
-   ```bash
-   npm run build
-   ```
+1. **Mother Teacher Shield:** Grade 1 and Grade 2 mother teachers must **never** be assigned as substitutes to maintain continuous emotional anchoring for early primary learners.
+2. **Grades 3–5 Isolation:** Grades 3–5 faculty may substitute **only within Grades 3–5**.
+3. **Grades 6–10 Isolation:** Grades 6–10 faculty may substitute **only within Grades 6–10**.
+4. **Hierarchical Match Priority:**
+   - **Priority 1 (Subject Specialist):** Available teacher who already teaches the required subject in that grade band.
+   - **Priority 2 (Approved Substitute):** Available teacher certified/approved to substitute for that subject.
+   - **Priority 3 (General Substitute):** Any available eligible faculty within the grade band.
+5. **Availability & Double-Booking Safeguard:** Checks daily gate attendance (disqualifies absent teachers) and verifies period vacancy against the teacher's weekly timetable.
 
 ---
 
-## 🎨 Design System & Palette
+## 📋 Established Daily Academic Report (DAR) Structure
 
-- **Navy (`#0c1b33` / `#1e3a5f`)**: Primary sidebar, typography, badges, and institutional anchors.
-- **Teal (`#0d9488` / `#14b8a6`)**: Active navigation accents, primary action buttons, and success indicators.
-- **Neutral White / Slate (`#f8fafc` / `#ffffff`)**: Crisp card surfaces and uncluttered contrast.
-- **Accents**: Amber for pending review states, Rose for absent faculty / urgent tickets, and Emerald for verified operations.
+The Daily Academic Report implements the standardized end-of-day campus reporting protocol across 10 sections:
+
+1. **Attendance Summary:** Student enrolled vs present, student attendance %, faculty rostered vs present, faculty attendance %.
+2. **Events and Celebrations:** Morning assemblies, Montessori circle observations, celebrations.
+3. **RRR Sessions:** Remedial (R1), Revision (R2), and Retention (R3) sessions conducted today.
+4. **Classroom Observations:** Walkthroughs conducted with 5-domain scores.
+5. **Grade 9 & Grade 10 Support Sessions:** CBSE secondary support clinics and attendance.
+6. **Syllabus Completion:** Chapter milestones and pacing velocity.
+7. **Teacher Discussion & DDR Verification:** Daily Diary Report (DDR) inspection by Head of School.
+8. **Branch Visits:** Supervisory walkthroughs and central academic inspections.
+9. **Additional Work:** Facility maintenance, safety audits, and special administrative tasks.
+10. **Closing Message:** Formal institutional closing: *"Jazakallahu Khairan."*
 
 ---
 
-## 🔒 Security & Privacy Notice
+## 🚀 Running the Application
+
+### Development
+```bash
+npm install
+npm run dev
+```
+Listens on `http://0.0.0.0:3000`.
+
+### Type Check & Compilation Verification
+```bash
+npm run lint    # Runs tsc --noEmit
+npm run build   # Compiles production bundle
+```
+
+---
+
+## 🔒 Security & Data Privacy Notice
 - **Zero Real PII:** All records, teacher profiles, student names, and phone numbers are fictional demonstration entities.
 - **No External Secrets:** No API keys, credentials, or private cloud storage buckets are bundled.
-- **Prepared for Firebase:** Ready for subsequent Firebase Authentication and Cloud Firestore rules when provisioned.
+- **Zero Ongoing Cost:** No billable cloud services or paid APIs enabled.

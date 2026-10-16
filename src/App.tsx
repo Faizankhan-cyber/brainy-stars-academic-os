@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { NavItemId, BranchCode } from './types/baos';
+import { NavItemId } from './types/baos';
+import { SchoolProvider, useSchool } from './context/SchoolContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 
@@ -37,27 +38,27 @@ import { PendingActionsFollowUp } from './components/leadership/PendingActionsFo
 // Settings
 import { SettingsView } from './components/settings/SettingsView';
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [activeNav, setActiveNav] = useState<NavItemId>('home');
-  const [currentBranch, setCurrentBranch] = useState<BranchCode | 'ALL'>('ALL');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { currentBranch, academicYear } = useSchool();
 
   const renderActiveView = () => {
     switch (activeNav) {
       case 'home':
-        return <HomeDashboard currentBranch={currentBranch} onNavigate={setActiveNav} />;
+        return <HomeDashboard onNavigate={setActiveNav} />;
 
       // Operations
       case 'operations-teachers':
-        return <TeacherMasterDatabase currentBranch={currentBranch} />;
+        return <TeacherMasterDatabase />;
       case 'operations-attendance':
-        return <TeacherAttendanceView currentBranch={currentBranch} />;
+        return <TeacherAttendanceView />;
       case 'operations-timetable':
         return <TimetableManagement currentBranch={currentBranch} />;
       case 'operations-substitution':
-        return <SubstitutionEngine currentBranch={currentBranch} />;
+        return <SubstitutionEngine />;
       case 'operations-daily-report':
-        return <DailyAcademicReportView currentBranch={currentBranch} />;
+        return <DailyAcademicReportView />;
       case 'operations-branch':
         return <BranchOperationsView currentBranch={currentBranch} />;
 
@@ -110,7 +111,7 @@ export const App: React.FC = () => {
         return <SettingsView />;
 
       default:
-        return <HomeDashboard currentBranch={currentBranch} onNavigate={setActiveNav} />;
+        return <HomeDashboard onNavigate={setActiveNav} />;
     }
   };
 
@@ -131,8 +132,6 @@ export const App: React.FC = () => {
       <div className="flex-1 flex flex-col lg:pl-72 transition-all duration-300">
         <Header
           activeNav={activeNav}
-          currentBranch={currentBranch}
-          onSelectBranch={setCurrentBranch}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         />
@@ -147,12 +146,20 @@ export const App: React.FC = () => {
               &copy; {new Date().getFullYear()} <strong>Brainy Stars Holistic Montessori</strong>, Bangalore. All Rights Reserved.
             </p>
             <p className="text-[11px] text-teal-800 font-medium">
-              Academic Operating System (BAOS) &bull; Montessori &bull; CBSE &bull; NEP 2020 &bull; Values Integrated
+              Academic Operating System (BAOS) &bull; AY {academicYear} &bull; Montessori &bull; CBSE &bull; NEP 2020 &bull; Values Integrated
             </p>
           </div>
         </footer>
       </div>
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <SchoolProvider>
+      <AppContent />
+    </SchoolProvider>
   );
 };
 

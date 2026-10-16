@@ -10,9 +10,10 @@ import {
   User,
   X,
   ShieldCheck,
+  Info,
 } from 'lucide-react';
 import { ParentConcern, BranchCode } from '../../types/baos';
-import { SAMPLE_PARENT_CONCERNS } from '../../data/baosSampleData';
+import { useSchool } from '../../context/SchoolContext';
 
 interface ParentConcernTrackerProps {
   currentBranch: BranchCode | 'ALL';
@@ -21,29 +22,18 @@ interface ParentConcernTrackerProps {
 export const ParentConcernTracker: React.FC<ParentConcernTrackerProps> = ({
   currentBranch,
 }) => {
-  const [concerns, setConcerns] = useState<ParentConcern[]>(SAMPLE_PARENT_CONCERNS);
+  const { parentConcerns, resolveParentConcern } = useSchool();
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [resolvingTicket, setResolvingTicket] = useState<ParentConcern | null>(null);
   const [resolutionText, setResolutionText] = useState('');
 
-  const filteredConcerns = concerns.filter((c) => {
+  const filteredConcerns = parentConcerns.filter((c) => {
     return currentBranch === 'ALL' || c.branch === currentBranch;
   });
 
   const handleResolve = (ticketId: string) => {
     if (!resolutionText) return;
-    setConcerns((prev) =>
-      prev.map((c) =>
-        c.id === ticketId
-          ? {
-              ...c,
-              status: 'Closed',
-              resolutionSummary: resolutionText,
-              slaDaysRemaining: 0,
-            }
-          : c
-      )
-    );
+    resolveParentConcern(ticketId, resolutionText);
     setResolvingTicket(null);
     setResolutionText('');
   };
@@ -52,7 +42,12 @@ export const ParentConcernTracker: React.FC<ParentConcernTrackerProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-navy-900">Parent Concern & Follow-up Tracker</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-navy-950">Parent Concern & Follow-up Tracker</h2>
+            <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold text-rose-800 border border-rose-200">
+              SLA Monitored
+            </span>
+          </div>
           <p className="text-xs text-slate-500">
             SLA-governed grievance redressal for transport, academics, hot meals, and student safety.
           </p>
@@ -60,7 +55,7 @@ export const ParentConcernTracker: React.FC<ParentConcernTrackerProps> = ({
 
         <button
           onClick={() => setIsLogModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition"
+          className="flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Log Parent Concern Ticket</span>
@@ -72,7 +67,7 @@ export const ParentConcernTracker: React.FC<ParentConcernTrackerProps> = ({
         {filteredConcerns.map((ticket) => (
           <div
             key={ticket.id}
-            className={`rounded-2xl border p-5 shadow-sm space-y-3 transition ${
+            className={`rounded-2xl border p-5 shadow-xs space-y-3 transition ${
               ticket.status === 'Open' || ticket.status === 'Under Investigation'
                 ? 'border-amber-200 bg-amber-50/20'
                 : 'border-slate-200 bg-white'
@@ -156,7 +151,7 @@ export const ParentConcernTracker: React.FC<ParentConcernTrackerProps> = ({
 
       {/* Resolution Modal */}
       {resolvingTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/70 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
             <button
               onClick={() => setResolvingTicket(null)}

@@ -14,71 +14,79 @@ import {
   Sparkles,
   ChevronRight,
   Info,
-  Layers,
-  Calendar,
 } from 'lucide-react';
-import { BranchCode, NavItemId } from '../../types/baos';
-import {
-  BRANCHES,
-  SAMPLE_TEACHERS,
-  SAMPLE_TEACHER_ATTENDANCE,
-  SAMPLE_SUBSTITUTIONS,
-  SAMPLE_DAILY_REPORTS,
-  SAMPLE_OBSERVATIONS,
-  SAMPLE_STUDENT_INTERVENTIONS,
-  SAMPLE_ACTION_ITEMS,
-  SAMPLE_RECENT_ACTIVITIES,
-} from '../../data/baosSampleData';
+import { NavItemId } from '../../types/baos';
+import { useSchool } from '../../context/SchoolContext';
 
 interface HomeDashboardProps {
-  currentBranch: BranchCode | 'ALL';
   onNavigate: (nav: NavItemId) => void;
 }
 
-export const HomeDashboard: React.FC<HomeDashboardProps> = ({
-  currentBranch,
-  onNavigate,
-}) => {
-  // Filter metrics according to selected campus
+export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
+  const {
+    academicYear,
+    term,
+    selectedDate,
+    currentBranch,
+    teachers,
+    teacherAttendance,
+    substitutionRequests,
+    dailyAcademicReports,
+    classroomObservations,
+    studentInterventions,
+    leadershipActionItems,
+    recentActivities,
+    branches,
+    toggleLeadershipAction,
+  } = useSchool();
+
+  // Mathematically consistent derived calculations
   const filteredTeachers =
     currentBranch === 'ALL'
-      ? SAMPLE_TEACHERS
-      : SAMPLE_TEACHERS.filter((t) => t.branch === currentBranch);
+      ? teachers
+      : teachers.filter((t) => t.branch === currentBranch);
 
-  const filteredAttendance =
-    currentBranch === 'ALL'
-      ? SAMPLE_TEACHER_ATTENDANCE
-      : SAMPLE_TEACHER_ATTENDANCE.filter((a) => a.branch === currentBranch);
+  const filteredAttendance = teacherAttendance.filter(
+    (a) => (currentBranch === 'ALL' || a.branch === currentBranch) && a.date === selectedDate
+  );
 
-  const presentCount = filteredAttendance.filter((a) => a.status === 'Present' || a.status === 'On Duty').length;
-  const attendanceRate = filteredAttendance.length > 0
-    ? ((presentCount / filteredAttendance.length) * 100).toFixed(1)
-    : '95.3';
+  const presentCount = filteredAttendance.filter(
+    (a) => a.status === 'Present' || a.status === 'On Duty'
+  ).length;
 
-  const pendingSubstitutions =
-    currentBranch === 'ALL'
-      ? SAMPLE_SUBSTITUTIONS.filter((s) => s.status === 'Pending Allocation').length
-      : SAMPLE_SUBSTITUTIONS.filter((s) => s.branch === currentBranch && s.status === 'Pending Allocation').length;
+  const attendanceRate =
+    filteredAttendance.length > 0
+      ? ((presentCount / filteredAttendance.length) * 100).toFixed(1)
+      : '100.0';
 
-  const pendingReports =
-    currentBranch === 'ALL'
-      ? SAMPLE_DAILY_REPORTS.filter((r) => r.status === 'Pending Review').length
-      : SAMPLE_DAILY_REPORTS.filter((r) => r.branch === currentBranch && r.status === 'Pending Review').length;
+  const pendingSubstitutions = substitutionRequests.filter(
+    (s) => (currentBranch === 'ALL' || s.branch === currentBranch) && s.status === 'Pending Allocation'
+  ).length;
 
-  const observationCount =
-    currentBranch === 'ALL'
-      ? SAMPLE_OBSERVATIONS.length
-      : SAMPLE_OBSERVATIONS.filter((o) => o.branch === currentBranch).length;
+  const pendingReports = dailyAcademicReports.filter(
+    (r) => (currentBranch === 'ALL' || r.branch === currentBranch) && r.status === 'Pending Review'
+  ).length;
 
-  const academicFollowUps =
-    currentBranch === 'ALL'
-      ? SAMPLE_STUDENT_INTERVENTIONS.filter((i) => i.outcomeStatus !== 'Resolved / Exited').length
-      : SAMPLE_STUDENT_INTERVENTIONS.filter((i) => i.branch === currentBranch && i.outcomeStatus !== 'Resolved / Exited').length;
+  const observationCount = classroomObservations.filter(
+    (o) => currentBranch === 'ALL' || o.branch === currentBranch
+  ).length;
+
+  const academicFollowUps = studentInterventions.filter(
+    (i) => (currentBranch === 'ALL' || i.branch === currentBranch) && i.outcomeStatus !== 'Resolved / Exited'
+  ).length;
+
+  const filteredActionItems = leadershipActionItems.filter(
+    (i) => currentBranch === 'ALL' || i.branch === currentBranch
+  );
+
+  const filteredRecentActivities = recentActivities.filter(
+    (a) => currentBranch === 'ALL' || a.branch === currentBranch || a.branch === 'All'
+  );
 
   return (
     <div className="space-y-6">
       {/* Demonstration Data Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-amber-900 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/90 p-4 text-xs text-amber-900 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800 shrink-0">
             <Info className="h-4 w-4" />
@@ -86,32 +94,34 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <div>
             <p className="font-bold text-amber-950">Demonstration Data Notice</p>
             <p className="text-amber-800 leading-relaxed">
-              All metrics, faculty rosters, and timetables displayed below are realistic fictional sample values configured for functional evaluation of BAOS.
+              All metrics, faculty rosters, timetables, and actions are consistent sample values configured for functional evaluation of BAOS.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
           <span className="rounded-md bg-amber-200/80 px-2.5 py-1 font-mono font-semibold text-[11px] text-amber-950">
-            PROTOTYPE v1.0
+            PROTOTYPE EVALUATION MODE
           </span>
         </div>
       </div>
 
-      {/* Top Welcome & Campus Strip */}
-      <div className="rounded-2xl bg-gradient-to-r from-navy-900 via-navy-850 to-slate-900 p-6 text-white shadow-lg">
+      {/* Top Welcome Strip with active Academic Year and Term */}
+      <div className="rounded-2xl bg-gradient-to-r from-navy-950 via-navy-900 to-slate-900 p-6 text-white shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/20 px-3 py-1 text-xs font-semibold text-teal-300">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Academic Year 2026 – 2027</span>
+              <span>Academic Year {academicYear}</span>
               <span>&bull;</span>
-              <span>Term 1</span>
+              <span>{term}</span>
+              <span>&bull;</span>
+              <span>Scope: {currentBranch === 'ALL' ? 'All Campuses' : currentBranch}</span>
             </div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight text-white">
               Brainy Stars Academic Operating System
             </h2>
-            <p className="text-xs text-slate-300 max-w-2xl">
-              Integrated operations, teacher coaching, CBSE + Montessori academics, and leadership intelligence for holistic child development.
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              Integrated operations, teacher coaching, CBSE + Montessori academics, and leadership governance for holistic child development.
             </p>
           </div>
 
@@ -134,12 +144,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </div>
       </div>
 
-      {/* 6 Required Summary KPI Cards */}
+      {/* 6 Required Summary KPI Cards (Mathematically consistent with store) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* 1. Total Teachers */}
         <div
           onClick={() => onNavigate('operations-teachers')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Total Teachers</span>
@@ -148,13 +158,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">
-              {currentBranch === 'ALL' ? '64' : filteredTeachers.length}
-            </span>
+            <span className="text-2xl font-black text-navy-950">{filteredTeachers.length}</span>
             <span className="text-[11px] font-medium text-slate-500">Faculty</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>Master Guides & CBSE Leads</span>
+            <span>Rostered in Scope</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -162,7 +170,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* 2. Teacher Attendance */}
         <div
           onClick={() => onNavigate('operations-attendance')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Teacher Attendance</span>
@@ -172,10 +180,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-2xl font-black text-navy-950">{attendanceRate}%</span>
-            <span className="text-[11px] font-semibold text-emerald-600">On Duty</span>
+            <span className="text-[11px] font-semibold text-emerald-600">
+              {presentCount}/{filteredAttendance.length} On Duty
+            </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-            <span>Today, 16 Oct 2026</span>
+            <span>Date: {selectedDate}</span>
             <ArrowUpRight className="h-3.5 w-3.5 text-teal-600" />
           </div>
         </div>
@@ -183,7 +193,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* 3. Substitution Requests */}
         <div
           onClick={() => onNavigate('operations-substitution')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-amber-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-amber-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Substitutions</span>
@@ -192,13 +202,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-amber-700">
-              {currentBranch === 'ALL' ? '4' : pendingSubstitutions}
-            </span>
+            <span className="text-2xl font-black text-amber-700">{pendingSubstitutions}</span>
             <span className="text-[11px] font-bold text-amber-800">Pending</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-amber-700 font-medium">
-            <span>2 Auto-Allocated</span>
+            <span>Rule-Based Engine</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -206,7 +214,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* 4. Pending Daily Reports */}
         <div
           onClick={() => onNavigate('operations-daily-report')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Daily Reports (DAR)</span>
@@ -215,13 +223,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">
-              {currentBranch === 'ALL' ? '2' : pendingReports}
-            </span>
+            <span className="text-2xl font-black text-navy-950">{pendingReports}</span>
             <span className="text-[11px] font-medium text-slate-500">To Review</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>2 Verified Today</span>
+            <span>End-of-Day Protocol</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -229,7 +235,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* 5. Classroom Observations */}
         <div
           onClick={() => onNavigate('coaching-observations')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Observations</span>
@@ -238,13 +244,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">
-              {currentBranch === 'ALL' ? '18' : observationCount}
-            </span>
-            <span className="text-[11px] font-medium text-slate-500">This Month</span>
+            <span className="text-2xl font-black text-navy-950">{observationCount}</span>
+            <span className="text-[11px] font-medium text-slate-500">Completed</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>Avg Rating 4.8 / 5.0</span>
+            <span>5-Domain Rubric</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -252,7 +256,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         {/* 6. Academic Follow-ups */}
         <div
           onClick={() => onNavigate('academics-interventions')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-rose-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-rose-500 hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Interventions</span>
@@ -261,9 +265,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-rose-700">
-              {currentBranch === 'ALL' ? '7' : academicFollowUps}
-            </span>
+            <span className="text-2xl font-black text-rose-700">{academicFollowUps}</span>
             <span className="text-[11px] font-bold text-rose-800">Active</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-rose-700 font-medium">
@@ -281,23 +283,25 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-600" />
               <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wide">
-                Pending Actions & Follow-ups
+                Pending Actions & Follow-ups ({filteredActionItems.length})
               </h3>
             </div>
             <button
               onClick={() => onNavigate('leadership-actions')}
               className="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1"
             >
-              <span>View All Items</span>
+              <span>Manage Directives</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
 
           <div className="space-y-3">
-            {SAMPLE_ACTION_ITEMS.map((item) => (
+            {filteredActionItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-teal-400 transition"
+                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border p-4 shadow-xs transition ${
+                  item.status === 'Closed' ? 'border-slate-200 bg-slate-50 opacity-75' : 'border-slate-200 bg-white hover:border-teal-400'
+                }`}
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
@@ -317,23 +321,29 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       Campus: {item.branch}
                     </span>
                   </div>
-                  <h4 className="text-xs font-bold text-slate-800">{item.title}</h4>
+                  <h4 className={`text-xs font-bold text-slate-800 ${item.status === 'Closed' ? 'line-through text-slate-400' : ''}`}>
+                    {item.title}
+                  </h4>
                   <div className="flex items-center gap-4 text-[11px] text-slate-500">
                     <span>Owner: {item.owner}</span>
                     <span>&bull;</span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3 text-slate-400" />
-                      Due {item.dueDate}
+                      Due: {item.dueDate}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   <button
-                    onClick={() => onNavigate('leadership-actions')}
-                    className="rounded-lg bg-navy-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-teal-600 transition"
+                    onClick={() => toggleLeadershipAction(item.id)}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                      item.status === 'Closed'
+                        ? 'border border-slate-200 bg-slate-100 text-slate-600'
+                        : 'bg-navy-900 text-white hover:bg-teal-600'
+                    }`}
                   >
-                    Review Action
+                    {item.status === 'Closed' ? 'Reopen' : 'Complete'}
                   </button>
                 </div>
               </div>
@@ -382,8 +392,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="text-[11px] text-slate-400">Live Feed</span>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm divide-y divide-slate-100">
-            {SAMPLE_RECENT_ACTIVITIES.map((act) => (
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs divide-y divide-slate-100">
+            {filteredRecentActivities.map((act) => (
               <div key={act.id} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3">
                 <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-teal-50 text-teal-700 shrink-0">
                   <CheckCircle2 className="h-4 w-4" />
@@ -411,10 +421,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
 
           {/* Campus Overview Mini-Card */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <span className="text-xs font-bold text-navy-900 uppercase">
-                Active Bangalore & Hubballi Campuses
+                Active Campuses ({branches.length})
               </span>
               <button
                 onClick={() => onNavigate('operations-branch')}
@@ -424,7 +434,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               </button>
             </div>
             <div className="space-y-2">
-              {BRANCHES.map((b) => (
+              {branches.map((b) => (
                 <div key={b.code} className="flex items-center justify-between text-xs py-1">
                   <div className="flex items-center gap-2">
                     <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
