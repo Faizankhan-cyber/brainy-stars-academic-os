@@ -1,0 +1,8 @@
+{
+  "name": "Brainy Stars Academic OS",
+  "description": "All-in-one Academic Operating System and school management platform for Brainy Stars International Holistic Montessori & School.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "permissions": []
+}
