@@ -1,72 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-@layer base {
-  :root {
-    --bsaos-purple: #602a73;
-    --bsaos-purple-dark: #49205a;
-    --bsaos-purple-soft: #f4edf7;
-    --bsaos-green: #59ac43;
-    --bsaos-green-dark: #438632;
-    --bsaos-green-soft: #edf7e9;
-    --bsaos-ink: #292333;
-    --bsaos-muted: #716879;
-    --bsaos-canvas: #f8f7fa;
-    --bsaos-border: #e8e2eb;
-  }
-  html { color-scheme: light; }
-  body { @apply antialiased; background: var(--bsaos-canvas); color: var(--bsaos-ink); font-feature-settings: "cv02", "cv03", "cv04", "cv11"; }
-  :focus-visible { outline: 3px solid color-mix(in srgb, var(--bsaos-green) 75%, white); outline-offset: 2px; }
-  ::selection { background: #e2f1dc; color: var(--bsaos-purple-dark); }
-}
-
-@layer utilities {
-  .bg-slate-900, .bg-slate-950 { background-color: var(--bsaos-purple-dark) !important; }
-  .bg-slate-800 { background-color: var(--bsaos-purple) !important; }
-  .bg-slate-700 { background-color: #714382 !important; }
-  .bg-slate-50 { background-color: var(--bsaos-canvas) !important; }
-  .bg-white { background-color: #fff !important; }
-  .text-teal-800, .text-teal-900, .text-emerald-800, .text-emerald-900 { color: var(--bsaos-green-dark) !important; }
-  .text-teal-700, .text-emerald-700 { color: #4b9137 !important; }
-  .text-teal-600, .text-emerald-600 { color: var(--bsaos-green) !important; }
-  .text-teal-500, .text-emerald-500 { color: #68b653 !important; }
-  .bg-teal-700, .bg-teal-800, .bg-emerald-700, .bg-emerald-800 { background-color: var(--bsaos-green-dark) !important; }
-  .bg-teal-600, .bg-emerald-600, .bg-teal-500, .bg-emerald-500 { background-color: var(--bsaos-green) !important; }
-  .bg-teal-50, .bg-teal-100, .bg-emerald-50, .bg-emerald-100 { background-color: var(--bsaos-green-soft) !important; }
-  .border-teal-200, .border-teal-300, .border-emerald-200, .border-emerald-300 { border-color: #cde5c3 !important; }
-  .text-indigo-700, .text-indigo-800, .text-violet-700, .text-violet-800 { color: var(--bsaos-purple) !important; }
-  .bg-indigo-50, .bg-indigo-100, .bg-violet-50, .bg-violet-100 { background-color: var(--bsaos-purple-soft) !important; }
-  .border-indigo-200, .border-violet-200 { border-color: #e2d2e9 !important; }
-  .border-slate-200, .border-slate-300 { border-color: var(--bsaos-border) !important; }
-  .text-slate-900, .text-slate-800 { color: var(--bsaos-ink) !important; }
-  .text-slate-600, .text-slate-500, .text-slate-400 { color: var(--bsaos-muted) !important; }
-}
-
-/* Cleaner shared surfaces */
-.rounded-xl, .rounded-2xl { border-color: var(--bsaos-border); }
-.shadow, .shadow-sm, .shadow-md, .shadow-lg { --tw-shadow-color: 73 32 90; --tw-shadow: 0 4px 18px -12px rgb(var(--tw-shadow-color) / 0.24); box-shadow: var(--tw-shadow); }
-table { border-collapse: separate; border-spacing: 0; }
-th { color: var(--bsaos-muted); font-weight: 600; }
-td, th { border-color: var(--bsaos-border); }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1edf3; }
-::-webkit-scrollbar-thumb { background: #c8b9d0; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #a18bad; }
-
-/* Reduce visual noise and keep controls consistent. */
-button, input, select, textarea { accent-color: var(--bsaos-green); }
-input, select, textarea { border-color: var(--bsaos-border); }
-button { transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 140ms ease; }
-
-/* Shared application shell and dashboard polish */
-:root { color-scheme: light; }
-html, body, #root { min-height: 100%; }
-body { margin: 0; }
-button, input, select, textarea { font: inherit; }
-@media (min-width: 1024px) {
-  aside { box-shadow: 8px 0 28px -24px rgba(28, 12, 38, .65); }
-}
-@media (max-width: 1023px) {
-  main { padding-bottom: 1.5rem; }
-}
+/* Figma-aligned executive dashboard surfaces */
+.bsa-dashboard { color: #292430; }
+.metric-card { min-height: 168px; box-shadow: 0 1px 2px rgba(40,20,50,.025); }
+.metric-icon { border: 1px solid transparent; }
+.metric-purple { background: #f5edf7; color: #4f1f63; }
+.metric-green { background: #ebf7e3; color: #3d7a2e; }
+.metric-amber { background: #fff7e0; color: #a3660a; }
+.metric-rose { background: #fff0f1; color: #c51f48; }
+.shortcut-card { min-height: 88px; }
+@media (min-width: 1536px) { .bsa-dashboard { gap: 22px; } .metric-card { min-height: 160px; } }
+@media (max-width: 639px) { .metric-card { min-height: 145px; } }

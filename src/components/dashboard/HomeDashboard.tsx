@@ -1,419 +1,46 @@
 import React from 'react';
-import {
-  Users,
-  CalendarCheck,
-  Shuffle,
-  FileSpreadsheet,
-  Eye,
-  LifeBuoy,
-  ArrowUpRight,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-  Building,
-  Sparkles,
-  ChevronRight,
-  Info,
-} from 'lucide-react';
+import { Users, CalendarCheck, Shuffle, FileSpreadsheet, Eye, LifeBuoy, ArrowUpRight, Clock, AlertTriangle, CheckCircle2, ChevronRight, BookOpen, GraduationCap, Target, CalendarDays } from 'lucide-react';
 import { NavItemId } from '../../types/baos';
 import { useSchool } from '../../context/SchoolContext';
-
-interface HomeDashboardProps {
-  onNavigate: (nav: NavItemId) => void;
-}
-
+interface HomeDashboardProps { onNavigate: (nav: NavItemId) => void }
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
-  const {
-    academicYear,
-    term,
-    selectedDate,
-    currentBranch,
-    teachers,
-    teacherAttendance,
-    substitutionRequests,
-    dailyAcademicReports,
-    classroomObservations,
-    studentInterventions,
-    leadershipActionItems,
-    recentActivities,
-    branches,
-    toggleLeadershipAction,
-  } = useSchool();
-
-  // Mathematically consistent derived calculations
-  const filteredTeachers =
-    currentBranch === 'ALL'
-      ? teachers
-      : teachers.filter((t) => t.branch === currentBranch);
-
-  const filteredAttendance = teacherAttendance.filter(
-    (a) => (currentBranch === 'ALL' || a.branch === currentBranch) && a.date === selectedDate
-  );
-
-  const presentCount = filteredAttendance.filter(
-    (a) => a.status === 'Present' || a.status === 'On Duty'
-  ).length;
-
-  const attendanceRate =
-    filteredAttendance.length > 0
-      ? ((presentCount / filteredAttendance.length) * 100).toFixed(1)
-      : '100.0';
-
-  const pendingSubstitutions = substitutionRequests.filter(
-    (s) => (currentBranch === 'ALL' || s.branch === currentBranch) && s.status === 'Pending Allocation'
-  ).length;
-
-  const pendingReports = dailyAcademicReports.filter(
-    (r) => (currentBranch === 'ALL' || r.branch === currentBranch) && r.status === 'Pending Review'
-  ).length;
-
-  const observationCount = classroomObservations.filter(
-    (o) => currentBranch === 'ALL' || o.branch === currentBranch
-  ).length;
-
-  const academicFollowUps = studentInterventions.filter(
-    (i) => (currentBranch === 'ALL' || i.branch === currentBranch) && i.outcomeStatus !== 'Resolved / Exited'
-  ).length;
-
-  const filteredActionItems = leadershipActionItems.filter(
-    (i) => currentBranch === 'ALL' || i.branch === currentBranch
-  );
-
-  const filteredRecentActivities = recentActivities.filter(
-    (a) => currentBranch === 'ALL' || a.branch === currentBranch || a.branch === 'All'
-  );
-
-  return (
-    <div className="space-y-6">
-
-      {/* Focused welcome panel with primary daily actions */}
-      <section className="relative overflow-hidden rounded-2xl border border-[#49205a] bg-[#49205a] p-5 shadow-sm md:p-7">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-          <div className="min-w-0 space-y-2">
-            <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>{academicYear}</span><span aria-hidden="true">•</span><span>{term}</span><span aria-hidden="true">•</span>
-              <span>{currentBranch === 'ALL' ? 'All Campuses' : currentBranch}</span>
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight text-white md:text-3xl">Good to see you. Here is your school at a glance.</h2>
-            <p className="max-w-3xl text-sm leading-relaxed text-white/75">Monitor daily operations, academic progress, teacher coaching and leadership follow-ups from one place.</p>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-2">
-            <button onClick={() => onNavigate('operations-substitution')} className="flex items-center gap-2 rounded-lg bg-[#59ac43] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#438632] focus-visible:outline-offset-2">
-              <Shuffle className="h-4 w-4" /><span>Manage Substitutions</span>
-            </button>
-            <button onClick={() => onNavigate('operations-daily-report')} className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15">
-              <FileSpreadsheet className="h-4 w-4" /><span>Review Daily Reports</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 6 Required Summary KPI Cards (Mathematically consistent with store) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-3">
-        {/* 1. Total Teachers */}
-        <div
-          onClick={() => onNavigate('operations-teachers')}
-          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Teachers</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-50 text-navy-800 group-hover:bg-teal-50 group-hover:text-teal-700 transition">
-              <Users className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">{filteredTeachers.length}</span>
-            <span className="text-[11px] font-medium text-slate-500">Faculty</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>Rostered in Scope</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-
-        {/* 2. Teacher Attendance */}
-        <div
-          onClick={() => onNavigate('operations-attendance')}
-          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Teacher Attendance</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-teal-700 group-hover:bg-teal-100 transition">
-              <CalendarCheck className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">{attendanceRate}%</span>
-            <span className="text-[11px] font-semibold text-emerald-600">
-              {presentCount}/{filteredAttendance.length} On Duty
-            </span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-            <span>Date: {selectedDate}</span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-teal-600" />
-          </div>
-        </div>
-
-        {/* 3. Substitution Requests */}
-        <div
-          onClick={() => onNavigate('operations-substitution')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-amber-500 hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Substitutions</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700 group-hover:bg-amber-100 transition">
-              <Shuffle className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-amber-700">{pendingSubstitutions}</span>
-            <span className="text-[11px] font-bold text-amber-800">Pending</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-amber-700 font-medium">
-            <span>Rule-Based Engine</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-
-        {/* 4. Pending Daily Reports */}
-        <div
-          onClick={() => onNavigate('operations-daily-report')}
-          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Daily Reports (DAR)</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-50 text-navy-800 group-hover:bg-teal-50 group-hover:text-teal-700 transition">
-              <FileSpreadsheet className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">{pendingReports}</span>
-            <span className="text-[11px] font-medium text-slate-500">To Review</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>End-of-Day Protocol</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-
-        {/* 5. Classroom Observations */}
-        <div
-          onClick={() => onNavigate('coaching-observations')}
-          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Observations</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-teal-700 group-hover:bg-teal-100 transition">
-              <Eye className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-navy-950">{observationCount}</span>
-            <span className="text-[11px] font-medium text-slate-500">Completed</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-teal-700 font-medium">
-            <span>5-Domain Rubric</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-
-        {/* 6. Academic Follow-ups */}
-        <div
-          onClick={() => onNavigate('academics-interventions')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-rose-500 hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Interventions</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-700 group-hover:bg-rose-100 transition">
-              <LifeBuoy className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-rose-700">{academicFollowUps}</span>
-            <span className="text-[11px] font-bold text-rose-800">Active</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-rose-700 font-medium">
-            <span>Concept & Sensory</span>
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
-        </div>
-      </div>
-
-      {/* Main Two-Column Layout: Pending Actions & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (7 cols): Pending Actions & Critical Follow-ups */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wide">
-                Pending Actions & Follow-ups ({filteredActionItems.length})
-              </h3>
-            </div>
-            <button
-              onClick={() => onNavigate('leadership-actions')}
-              className="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1"
-            >
-              <span>Manage Directives</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {filteredActionItems.map((item) => (
-              <div
-                key={item.id}
-                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border p-4 shadow-xs transition ${
-                  item.status === 'Closed' ? 'border-slate-200 bg-slate-50 opacity-75' : 'border-slate-200 bg-white hover:border-teal-400'
-                }`}
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                        item.priority === 'Critical'
-                          ? 'bg-rose-100 text-rose-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {item.priority}
-                    </span>
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
-                      {item.category}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400">
-                      Campus: {item.branch}
-                    </span>
-                  </div>
-                  <h4 className={`text-xs font-bold text-slate-800 ${item.status === 'Closed' ? 'line-through text-slate-400' : ''}`}>
-                    {item.title}
-                  </h4>
-                  <div className="flex items-center gap-4 text-[11px] text-slate-500">
-                    <span>Owner: {item.owner}</span>
-                    <span>&bull;</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-slate-400" />
-                      Due: {item.dueDate}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <button
-                    onClick={() => toggleLeadershipAction(item.id)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                      item.status === 'Closed'
-                        ? 'border border-slate-200 bg-slate-100 text-slate-600'
-                        : 'bg-navy-900 text-white hover:bg-teal-600'
-                    }`}
-                  >
-                    {item.status === 'Closed' ? 'Reopen' : 'Complete'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Quick Module Shortcut Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <div
-              onClick={() => onNavigate('academics-grade10')}
-              className="cursor-pointer rounded-xl border border-teal-200 bg-teal-50/50 p-4 hover:bg-teal-50 transition"
-            >
-              <div className="flex items-center gap-2 text-teal-800 font-bold text-xs">
-                <Sparkles className="h-4 w-4 text-teal-600" />
-                <span>Grade 10 Board Support Sessions</span>
-              </div>
-              <p className="mt-1 text-[11px] text-slate-600">
-                Mathematics & Science support clinics for board exam readiness.
-              </p>
-            </div>
-
-            <div
-              onClick={() => onNavigate('coaching-academy')}
-              className="cursor-pointer rounded-xl border border-navy-200 bg-navy-50/50 p-4 hover:bg-navy-50 transition"
-            >
-              <div className="flex items-center gap-2 text-navy-900 font-bold text-xs">
-                <Building className="h-4 w-4 text-navy-700" />
-                <span>Teacher Training Academy</span>
-              </div>
-              <p className="mt-1 text-[11px] text-slate-600">
-                Montessori Normalization & NEP 2020 pedagogical modules.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column (5 cols): Recent Activity Log */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-teal-700" />
-              <h3 className="text-sm font-bold text-navy-900 uppercase tracking-wide">
-                Recent Campus Activity
-              </h3>
-            </div>
-            <span className="text-[11px] text-slate-400">Live Feed</span>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs divide-y divide-slate-100">
-            {filteredRecentActivities.map((act) => (
-              <div key={act.id} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3">
-                <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-teal-50 text-teal-700 shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-800 leading-tight">
-                      {act.title}
-                    </span>
-                    <span className="text-[10px] text-slate-400 shrink-0 font-medium ml-2">
-                      {act.time}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-snug">
-                    {act.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-[10px] font-semibold text-teal-700">
-                    <span className="rounded bg-slate-100 px-1.5 py-0.2 text-slate-600">
-                      Campus: {act.branch}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Campus Overview Mini-Card */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold text-navy-900 uppercase">
-                Active Campuses ({branches.length})
-              </span>
-              <button
-                onClick={() => onNavigate('operations-branch')}
-                className="text-[11px] font-bold text-teal-700 hover:underline"
-              >
-                Details &rarr;
-              </button>
-            </div>
-            <div className="space-y-2">
-              {branches.map((b) => (
-                <div key={b.code} className="flex items-center justify-between text-xs py-1">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="font-semibold text-slate-700">{b.name}</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono">
-                    {b.studentCount} Students &bull; {b.facultyCount} Faculty
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ const { academicYear, term, selectedDate, currentBranch, teachers, teacherAttendance, substitutionRequests, dailyAcademicReports, classroomObservations, studentInterventions, leadershipActionItems, recentActivities, branches, toggleLeadershipAction } = useSchool();
+ const inScope=(branch:string)=>currentBranch==='ALL'||branch===currentBranch;
+ const scopedTeachers=teachers.filter(t=>inScope(t.branch));
+ const attendance=teacherAttendance.filter(a=>inScope(a.branch)&&a.date===selectedDate);
+ const onDuty=attendance.filter(a=>a.status==='Present'||a.status==='On Duty').length;
+ const rate=attendance.length?(onDuty/attendance.length*100).toFixed(1)+'%':'—';
+ const pendingSubs=substitutionRequests.filter(s=>inScope(s.branch)&&s.status==='Pending Allocation').length;
+ const pendingReports=dailyAcademicReports.filter(r=>inScope(r.branch)&&r.status==='Pending Review').length;
+ const observations=classroomObservations.filter(o=>inScope(o.branch)).length;
+ const interventions=studentInterventions.filter(i=>inScope(i.branch)&&i.outcomeStatus!=='Resolved / Exited').length;
+ const actions=leadershipActionItems.filter(i=>inScope(i.branch));
+ const activities=recentActivities.filter(a=>inScope(a.branch)||a.branch==='All').slice(0,5);
+ const metrics=[
+ {label:'Teachers',value:scopedTeachers.length,note:'Across selected campuses',icon:Users,tone:'purple',nav:'operations-teachers' as NavItemId},
+ {label:'Attendance',value:rate,note:attendance.length?'Today · '+onDuty+' on duty':'No attendance recorded',icon:CalendarCheck,tone:'green',nav:'operations-attendance' as NavItemId},
+ {label:'Substitutions',value:String(pendingSubs).padStart(2,'0'),note:'Awaiting allocation',icon:Shuffle,tone:'amber',nav:'operations-substitution' as NavItemId},
+ {label:'Daily reports',value:pendingReports,note:'Pending review',icon:FileSpreadsheet,tone:'purple',nav:'operations-daily-report' as NavItemId},
+ {label:'Observations',value:observations,note:'Classroom records',icon:Eye,tone:'green',nav:'coaching-observations' as NavItemId},
+ {label:'Interventions',value:interventions,note:'Active student support',icon:LifeBuoy,tone:'rose',nav:'academics-interventions' as NavItemId}
+ ];
+ return <div className="bsa-dashboard space-y-6">
+ <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+ <div><div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#f3eaf6] px-3 py-1.5 text-[11px] font-semibold text-[#4f1f63]"><span className="h-2 w-2 rounded-full bg-[#59ab42]"/>{academicYear}<span className="text-[#b9a7c2]">•</span>{term}<span className="text-[#b9a7c2]">•</span>{currentBranch==='ALL'?'All campuses':currentBranch}</div>
+ <h2 className="text-[26px] font-bold tracking-[-0.035em] text-[#292430] sm:text-[30px]">Your school, at a glance</h2><p className="mt-1 text-sm text-[#716879]">The priorities and signals that need your attention today.</p></div>
+ <div className="flex items-center gap-2 self-start rounded-full bg-[#ebf7e3] px-3 py-1.5 text-[11px] font-semibold text-[#3d7a2e] sm:self-auto"><CalendarDays className="h-3.5 w-3.5"/>{new Date(selectedDate+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'})}</div>
+ </section>
+ <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6" aria-label="School summary">
+ {metrics.map(({label,value,note,icon:Icon,tone,nav})=><button key={label} onClick={()=>onNavigate(nav)} className="metric-card group min-w-0 rounded-[13px] border border-[#e5e0e8] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#cbb7d5] hover:shadow-md focus-visible:outline-offset-2">
+ <span className={`metric-icon metric-${tone} mb-3 flex h-9 w-9 items-center justify-center rounded-[10px]`}><Icon className="h-[18px] w-[18px]"/></span><span className="block text-[11px] font-medium text-[#716879]">{label}</span><span className="mt-1 block text-[27px] font-bold leading-8 tracking-tight text-[#292430]">{value}</span><span className="mt-1 block min-h-[28px] text-[10px] leading-4 text-[#716879]">{note}</span><span className="mt-2 flex justify-end text-[#a9a0b1] transition group-hover:text-[#59ab42]"><ArrowUpRight className="h-4 w-4"/></span></button>)}
+ </section>
+ <section className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+ <div className="xl:col-span-7"><div className="mb-3 flex items-center justify-between gap-3"><div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff3d7] text-[#a3660a]"><AlertTriangle className="h-4 w-4"/></span><div><h3 className="text-sm font-bold text-[#292430]">Pending actions & follow-ups <span className="text-[#716879]">({actions.filter(a=>a.status!=='Closed').length})</span></h3><p className="mt-0.5 text-[11px] text-[#8b8292]">Items that need leadership attention</p></div></div><button onClick={()=>onNavigate('leadership-actions')} className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#438632] hover:underline">Manage <ChevronRight className="h-3.5 w-3.5"/></button></div>
+ <div className="overflow-hidden rounded-[13px] border border-[#e5e0e8] bg-white">{actions.length?actions.slice(0,5).map((item,index)=><div key={item.id} className={`flex items-start gap-3 px-4 py-3.5 ${index?'border-t border-[#f0ecf2]':''}`}><span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${item.priority==='Critical'?'bg-rose-50 text-rose-600':'bg-amber-50 text-amber-700'}`}>{item.status==='Closed'?<CheckCircle2 className="h-4 w-4"/>:<Target className="h-4 w-4"/>}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-1.5"><span className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide ${item.priority==='Critical'?'bg-rose-50 text-rose-700':'bg-amber-50 text-amber-700'}`}>{item.priority}</span><span className="text-[10px] text-[#8b8292]">{item.category} · {item.branch}</span></div><p className={`text-xs font-semibold leading-5 ${item.status==='Closed'?'text-[#8b8292] line-through':'text-[#292430]'}`}>{item.title}</p><p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-[#8b8292]"><span>Owner: {item.owner}</span><span className="inline-flex items-center gap-1"><Clock className="h-3 w-3"/>Due {item.dueDate}</span></p></div><button onClick={()=>toggleLeadershipAction(item.id)} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-[10px] font-semibold ${item.status==='Closed'?'border border-[#e5e0e8] text-[#716879] hover:bg-[#faf7fb]':'bg-[#4f1f63] text-white hover:bg-[#3e174f]'}`}>{item.status==='Closed'?'Reopen':'Complete'}</button></div>):<div className="p-8 text-center text-sm text-[#8b8292]">No action items for this campus scope.</div>}</div>
+ <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2"><button onClick={()=>onNavigate('academics-grade10')} className="shortcut-card flex items-start gap-3 rounded-[13px] border border-[#d8e9d0] bg-[#f5faf2] p-4 text-left transition hover:bg-[#ebf7e3]"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[#438632]"><GraduationCap className="h-4 w-4"/></span><span><span className="block text-xs font-bold text-[#3d7a2e]">Grade 10 support</span><span className="mt-1 block text-[10px] leading-4 text-[#716879]">Board preparation and targeted academic follow-up.</span></span></button><button onClick={()=>onNavigate('coaching-academy')} className="shortcut-card flex items-start gap-3 rounded-[13px] border border-[#e5d8ec] bg-[#faf6fc] p-4 text-left transition hover:bg-[#f3eaf6]"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[#4f1f63]"><BookOpen className="h-4 w-4"/></span><span><span className="block text-xs font-bold text-[#4f1f63]">Teacher Training Academy</span><span className="mt-1 block text-[10px] leading-4 text-[#716879]">Build consistent teaching practice through coaching.</span></span></button></div>
+ </div>
+ <div className="xl:col-span-5"><div className="mb-3 flex items-center justify-between gap-3"><div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ebf7e3] text-[#438632]"><Clock className="h-4 w-4"/></span><div><h3 className="text-sm font-bold text-[#292430]">Recent campus activity</h3><p className="mt-0.5 text-[11px] text-[#8b8292]">Latest updates across your selected scope</p></div></div><span className="flex items-center gap-1.5 text-[10px] font-medium text-[#716879]"><span className="h-1.5 w-1.5 rounded-full bg-[#59ab42]"/>Activity</span></div>
+ <div className="overflow-hidden rounded-[13px] border border-[#e5e0e8] bg-white px-4">{activities.length?activities.map((act,index)=><div key={act.id} className={`flex gap-3 py-4 ${index?'border-t border-[#f0ecf2]':''}`}><span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ebf7e3] text-[#438632]"><CheckCircle2 className="h-4 w-4"/></span><div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-3"><p className="text-xs font-semibold leading-5 text-[#292430]">{act.title}</p><span className="shrink-0 pt-0.5 text-[10px] text-[#9a91a1]">{act.time}</span></div><p className="mt-1 text-[11px] leading-5 text-[#716879]">{act.description}</p><span className="mt-2 inline-flex rounded-md bg-[#f6f3f8] px-2 py-1 text-[9px] font-medium text-[#716879]">{act.branch==='All'?'All campuses':act.branch}</span></div></div>):<div className="p-8 text-center text-sm text-[#8b8292]">No recent activity in this scope.</div>}</div>
+ <div className="mt-4 rounded-[13px] border border-[#e5e0e8] bg-white p-4"><div className="flex items-center justify-between"><h4 className="text-xs font-bold text-[#292430]">Campus overview</h4><span className="text-[10px] font-semibold text-[#438632]">{branches.length} active</span></div><div className="mt-3 space-y-3">{branches.slice(0,4).map(branch=><div key={branch.code} className="flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f3eaf6] text-[10px] font-bold text-[#4f1f63]">{branch.code.slice(0,3)}</span><div className="min-w-0 flex-1"><p className="truncate text-[11px] font-semibold text-[#292430]">{branch.name}</p><p className="text-[10px] text-[#8b8292]">{branch.code}</p></div><button onClick={()=>onNavigate('operations-branch')} className="text-[#9a91a1] hover:text-[#4f1f63]" aria-label={`View ${branch.name} operations`}><ArrowUpRight className="h-4 w-4"/></button></div>)}</div></div>
+ </div></section></div>;
 };
