@@ -103,7 +103,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
+    <div className="min-h-screen bg-[#faf7fb] text-[#302a35] font-sans flex flex-col">
       <Sidebar
         activeNav={activeNav}
         onNavigate={(nav) => {
@@ -114,27 +114,18 @@ const AppContent: React.FC = () => {
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      <div className="flex-1 flex flex-col lg:pl-72 transition-all duration-300">
+      <div className="flex-1 flex flex-col lg:pl-48 transition-all duration-300">
         <Header
           activeNav={activeNav}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         />
 
-        <main className="flex-1 p-4 md:p-6 xl:p-7 max-w-none w-full">
+        <div className="mx-[22px] mt-[14px] flex min-h-[30px] items-center gap-2 rounded-[7px] border border-[#f5d47b] bg-[#fff8e5] px-2.5 text-[8px] text-[#8b4d00]"><span className="flex h-[12px] w-[12px] items-center justify-center rounded-full border border-[#b66a12] text-[8px] font-bold">i</span><span className="font-semibold">DEMO ENVIRONMENT</span><span className="text-[#c28b38]">·</span><span>Sample data only. No live school records are connected.</span></div>\n        <main className="flex-1 p-3 md:px-[22px] md:py-[15px] max-w-none w-full">
           {renderActiveView()}
         </main>
 
-        <footer className="border-t border-slate-200 bg-white py-4 px-6 text-center text-xs text-slate-500">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto">
-            <p>
-              &copy; {new Date().getFullYear()} <strong>Brainy Stars Holistic Montessori</strong>, Bangalore. All Rights Reserved.
-            </p>
-            <p className="text-[11px] text-teal-800 font-medium">
-              Academic Operating System (BAOS) &bull; AY {academicYear} &bull; Montessori &bull; CBSE &bull; NEP 2020 &bull; Values Integrated
-            </p>
-          </div>
-        </footer>
+
       </div>
     </div>
   );
