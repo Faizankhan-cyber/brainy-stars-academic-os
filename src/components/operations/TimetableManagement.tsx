@@ -254,6 +254,20 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
           </span>
         </div>
 
+      {editingPeriod !== null && (
+        <div role="dialog" aria-modal="true" aria-label={`Edit period ${editingPeriod}`} className="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
+          <div className="flex items-center justify-between"><h3 className="font-bold text-sm text-navy-950">Edit {activeDay} · Period {editingPeriod} · {selectedGrade}</h3><span className="text-[10px] text-slate-500">Branch: {branchKey}</span></div>
+          <p className="text-xs text-slate-600">Edit the fields below, then select Save demo timetable. Changes are saved to this browser's demo storage only. Exported files may include illustrative sample entries until reviewed and replaced with approved school data.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="text-xs font-semibold text-slate-700">Subject<input value={draft.subject} onChange={(e) => setDraft((p) => ({ ...p, subject: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Enter subject" /></label>
+            <label className="text-xs font-semibold text-slate-700">Assigned employee<select value={draft.teacherId || ''} onChange={(e) => { const t = teachers.find((item) => item.id === e.target.value); setDraft((p) => ({ ...p, teacherId: t?.id || undefined, teacher: t?.name || '' })); }} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Unassigned / external entry</option>{teachers.filter((t) => t.status === 'Active' && (currentBranch === 'ALL' || t.branch === currentBranch)).map((t) => <option key={t.id} value={t.id}>{t.code} · {t.name}</option>)}</select></label>
+            <label className="text-xs font-semibold text-slate-700">Room / learning space<input value={draft.room} onChange={(e) => setDraft((p) => ({ ...p, room: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Room / lab" /></label>
+            <label className="text-xs font-semibold text-slate-700">Category<select value={draft.category} onChange={(e) => setDraft((p) => ({ ...p, category: e.target.value as ScheduleSlot['category'] }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Montessori</option><option>CBSE</option><option>Values/Islamic</option><option>Sports/Arts</option></select></label>
+          </div>
+          <div className="flex gap-2"><button type="button" onClick={saveSlot} className="inline-flex items-center gap-1 rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /> Save demo timetable</button><button type="button" onClick={() => setEditingPeriod(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold">Cancel</button></div>
+        </div>
+      )}
+
         <div className="space-y-3">
           {PERIODS.map((slot, idx) => {
             if (typeof slot.period === 'string') {
@@ -315,26 +329,14 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
 
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   <div className="font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">{slot.time}</div>
-                  <button onClick={() => beginEdit(Number(slot.period))} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
+                  <button type="button" onClick={() => beginEdit(slot.period)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-      {editingPeriod !== null && (
-        <div role="dialog" aria-modal="true" aria-label={`Edit period ${editingPeriod}`} className="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
-          <div className="flex items-center justify-between"><h3 className="font-bold text-sm text-navy-950">Edit {activeDay} · Period {editingPeriod} · {selectedGrade}</h3><span className="text-[10px] text-slate-500">Branch: {branchKey}</span></div>
-          <p className="text-xs text-slate-600">Changes are saved to this browser's demo storage only. Exported files may include illustrative sample entries until reviewed and replaced with approved school data.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label className="text-xs font-semibold text-slate-700">Subject<input value={draft.subject} onChange={(e) => setDraft((p) => ({ ...p, subject: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Enter subject" /></label>
-            <label className="text-xs font-semibold text-slate-700">Assigned employee<select value={draft.teacherId || ''} onChange={(e) => { const t = teachers.find((item) => item.id === e.target.value); setDraft((p) => ({ ...p, teacherId: t?.id || undefined, teacher: t?.name || '' })); }} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Unassigned / external entry</option>{teachers.filter((t) => t.status === 'Active' && (currentBranch === 'ALL' || t.branch === currentBranch)).map((t) => <option key={t.id} value={t.id}>{t.code} · {t.name}</option>)}</select></label>
-            <label className="text-xs font-semibold text-slate-700">Room / learning space<input value={draft.room} onChange={(e) => setDraft((p) => ({ ...p, room: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Room / lab" /></label>
-            <label className="text-xs font-semibold text-slate-700">Category<select value={draft.category} onChange={(e) => setDraft((p) => ({ ...p, category: e.target.value as ScheduleSlot['category'] }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Montessori</option><option>CBSE</option><option>Values/Islamic</option><option>Sports/Arts</option></select></label>
-          </div>
-          <div className="flex gap-2"><button onClick={saveSlot} className="inline-flex items-center gap-1 rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /> Save demo timetable</button><button onClick={() => setEditingPeriod(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold">Cancel</button></div>
-        </div>
-      )}
+
       <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle className="h-4 w-4 shrink-0" /><p><strong>Validation scope:</strong> visible timetable only. Teacher conflict warnings can only use linked employee IDs in this class/day view; cross-class and whole-week conflict validation is not yet available. Timetable data is not yet written back to employee weekly timetables or substitution allocations.</p></div>
     </div>
   );
