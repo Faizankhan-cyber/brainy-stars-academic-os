@@ -12,6 +12,8 @@ import {
   Pencil,
   Save,
   AlertTriangle,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { BranchCode } from '../../types/baos';
 
@@ -22,6 +24,7 @@ interface TimetableManagementProps {
 type EditableSlot = ScheduleSlot & { teacherId?: string };
 type SavedSchedules = Record<string, Record<string, Record<number, EditableSlot>>>;
 const STORAGE_KEY = 'timetableSchedules';
+const HIDDEN_STORAGE_KEY = 'timetableHiddenSchedules';
 const emptySlot = (): EditableSlot => ({ subject: '', teacher: '', room: '', category: 'CBSE' });
 
 const PERIODS = [
@@ -103,6 +106,7 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
   const [activeDay, setActiveDay] = useState('Monday');
   const [editingPeriod, setEditingPeriod] = useState<number | null>(null);
   const [draft, setDraft] = useState<EditableSlot>(emptySlot());
+  const [hiddenSchedules, setHiddenSchedules] = useState<string[]>(() => typeof window === 'undefined' ? [] : readDemoValue<string[]>(window.localStorage, HIDDEN_STORAGE_KEY, []));
   const [savedSchedules, setSavedSchedules] = useState<SavedSchedules>(() => {
     if (typeof window === 'undefined') return {};
     return readDemoValue<SavedSchedules>(window.localStorage, STORAGE_KEY, {});
@@ -110,9 +114,14 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
   useEffect(() => {
     if (typeof window !== 'undefined') writeDemoValue(window.localStorage, STORAGE_KEY, savedSchedules);
   }, [savedSchedules]);
+  useEffect(() => {
+    if (typeof window !== 'undefined') writeDemoValue(window.localStorage, HIDDEN_STORAGE_KEY, hiddenSchedules);
+  }, [hiddenSchedules]);
   const branchKey = currentBranch === 'ALL' ? 'ALL' : currentBranch;
   const scheduleKey = `${branchKey}::${selectedGrade}`;
-  const activeSchedule: Record<number, EditableSlot> = savedSchedules[scheduleKey]?.[activeDay] || SAMPLE_SCHEDULE[activeDay] || {};
+  const hasSavedTimetable = Object.prototype.hasOwnProperty.call(savedSchedules, scheduleKey);
+  const isHiddenTimetable = hiddenSchedules.includes(scheduleKey);
+  const activeSchedule: Record<number, EditableSlot> = hasSavedTimetable ? (savedSchedules[scheduleKey]?.[activeDay] || {}) : isHiddenTimetable ? {} : (SAMPLE_SCHEDULE[activeDay] || {});
   const visibleTeacherConflicts = useMemo(() => {
     const counts = new Map<string, number>();
     Object.values(activeSchedule).forEach((lesson) => {
@@ -134,8 +143,26 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
     setEditingPeriod(period);
   };
 
-  const getDaySchedule = (day: string): Record<number, EditableSlot> =>
-    savedSchedules[scheduleKey]?.[day] || (SAMPLE_SCHEDULE[day] as Record<number, EditableSlot> | undefined) || {};
+  const createTimetable = () => {
+    if (hasSavedTimetable) return;
+    setSavedSchedules((prev) => ({ ...prev, [scheduleKey]: Object.fromEntries(DAYS.map((day) => [day, {}])) }));
+    setHiddenSchedules((prev) => prev.filter((key) => key !== scheduleKey));
+    setEditingPeriod(null);
+  };
+
+  const deleteTimetable = () => {
+    if (!hasSavedTimetable && isHiddenTimetable) return;
+    if (!window.confirm(`Remove the timetable for ${selectedGrade} at branch ${branchKey} from this browser's demo storage?`)) return;
+    setSavedSchedules((prev) => { const next = { ...prev }; delete next[scheduleKey]; return next; });
+    setHiddenSchedules((prev) => prev.includes(scheduleKey) ? prev : [...prev, scheduleKey]);
+    setEditingPeriod(null);
+  };
+
+  const getDaySchedule = (day: string): Record<number, EditableSlot> => {
+    if (hasSavedTimetable) return savedSchedules[scheduleKey]?.[day] || {};
+    if (isHiddenTimetable) return {};
+    return (SAMPLE_SCHEDULE[day] as Record<number, EditableSlot> | undefined) || {};
+  };
 
   const exportCsv = () => {
     const rows = [['Branch', branchKey], ['Class / Section', selectedGrade], [], ['Day', 'Period', 'Time', 'Subject', 'Employee', 'Employee ID', 'Room', 'Category', 'Assignment Status']];
@@ -204,6 +231,12 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
               <option value="Grade 10">Grade 10 (CBSE Secondary)</option>
             </select>
           </div>
+          <button type="button" onClick={createTimetable} disabled={hasSavedTimetable} className="flex items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 shadow-sm hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-50" title="Create a blank timetable for this branch and class">
+            <Plus className="h-4 w-4" /> <span>New Timetable</span>
+          </button>
+          <button type="button" onClick={deleteTimetable} disabled={!hasSavedTimetable && isHiddenTimetable} className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50" title="Remove this class timetable from this browser's demo storage">
+            <Trash2 className="h-4 w-4" /> <span>Delete Timetable</span>
+          </button>
           <button
             onClick={exportCsv}
             className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
@@ -253,20 +286,6 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
             {Object.values(activeSchedule).filter((lesson) => lesson.subject).length} assigned periods · Demo-only schedule
           </span>
         </div>
-
-      {editingPeriod !== null && (
-        <div role="dialog" aria-modal="true" aria-label={`Edit period ${editingPeriod}`} className="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
-          <div className="flex items-center justify-between"><h3 className="font-bold text-sm text-navy-950">Edit {activeDay} · Period {editingPeriod} · {selectedGrade}</h3><span className="text-[10px] text-slate-500">Branch: {branchKey}</span></div>
-          <p className="text-xs text-slate-600">Edit the fields below, then select Save demo timetable. Changes are saved to this browser's demo storage only. Exported files may include illustrative sample entries until reviewed and replaced with approved school data.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label className="text-xs font-semibold text-slate-700">Subject<input value={draft.subject} onChange={(e) => setDraft((p) => ({ ...p, subject: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Enter subject" /></label>
-            <label className="text-xs font-semibold text-slate-700">Assigned employee<select value={draft.teacherId || ''} onChange={(e) => { const t = teachers.find((item) => item.id === e.target.value); setDraft((p) => ({ ...p, teacherId: t?.id || undefined, teacher: t?.name || '' })); }} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Unassigned / external entry</option>{teachers.filter((t) => t.status === 'Active' && (currentBranch === 'ALL' || t.branch === currentBranch)).map((t) => <option key={t.id} value={t.id}>{t.code} · {t.name}</option>)}</select></label>
-            <label className="text-xs font-semibold text-slate-700">Room / learning space<input value={draft.room} onChange={(e) => setDraft((p) => ({ ...p, room: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Room / lab" /></label>
-            <label className="text-xs font-semibold text-slate-700">Category<select value={draft.category} onChange={(e) => setDraft((p) => ({ ...p, category: e.target.value as ScheduleSlot['category'] }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Montessori</option><option>CBSE</option><option>Values/Islamic</option><option>Sports/Arts</option></select></label>
-          </div>
-          <div className="flex gap-2"><button type="button" onClick={saveSlot} className="inline-flex items-center gap-1 rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /> Save demo timetable</button><button type="button" onClick={() => setEditingPeriod(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold">Cancel</button></div>
-        </div>
-      )}
 
         <div className="space-y-3">
           {PERIODS.map((slot, idx) => {
@@ -329,14 +348,26 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
 
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   <div className="font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">{slot.time}</div>
-                  <button type="button" onClick={() => beginEdit(slot.period)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
+                  <button onClick={() => beginEdit(Number(slot.period))} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-
+      {editingPeriod !== null && (
+        <div role="dialog" aria-modal="true" aria-label={`Edit period ${editingPeriod}`} className="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
+          <div className="flex items-center justify-between"><h3 className="font-bold text-sm text-navy-950">Edit {activeDay} · Period {editingPeriod} · {selectedGrade}</h3><span className="text-[10px] text-slate-500">Branch: {branchKey}</span></div>
+          <p className="text-xs text-slate-600">Changes are saved to this browser's demo storage only. Exported files may include illustrative sample entries until reviewed and replaced with approved school data.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="text-xs font-semibold text-slate-700">Subject<input value={draft.subject} onChange={(e) => setDraft((p) => ({ ...p, subject: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Enter subject" /></label>
+            <label className="text-xs font-semibold text-slate-700">Assigned employee<select value={draft.teacherId || ''} onChange={(e) => { const t = teachers.find((item) => item.id === e.target.value); setDraft((p) => ({ ...p, teacherId: t?.id || undefined, teacher: t?.name || '' })); }} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Unassigned / external entry</option>{teachers.filter((t) => t.status === 'Active' && (currentBranch === 'ALL' || t.branch === currentBranch)).map((t) => <option key={t.id} value={t.id}>{t.code} · {t.name}</option>)}</select></label>
+            <label className="text-xs font-semibold text-slate-700">Room / learning space<input value={draft.room} onChange={(e) => setDraft((p) => ({ ...p, room: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Room / lab" /></label>
+            <label className="text-xs font-semibold text-slate-700">Category<select value={draft.category} onChange={(e) => setDraft((p) => ({ ...p, category: e.target.value as ScheduleSlot['category'] }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Montessori</option><option>CBSE</option><option>Values/Islamic</option><option>Sports/Arts</option></select></label>
+          </div>
+          <div className="flex gap-2"><button onClick={saveSlot} className="inline-flex items-center gap-1 rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /> Save demo timetable</button><button onClick={() => setEditingPeriod(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold">Cancel</button></div>
+        </div>
+      )}
       <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle className="h-4 w-4 shrink-0" /><p><strong>Validation scope:</strong> visible timetable only. Teacher conflict warnings can only use linked employee IDs in this class/day view; cross-class and whole-week conflict validation is not yet available. Timetable data is not yet written back to employee weekly timetables or substitution allocations.</p></div>
     </div>
   );
