@@ -1,0 +1,16 @@
+/* BSAOS readability layer: loaded after the existing design system. */
+html { font-size: 16px; }
+body { font-size: 16px; line-height: 1.55; }
+button, input, select, textarea { font-size: 15px; }
+/* Raise the tiny arbitrary font sizes used in the first visual prototype. */
+[class*="text-[6px]"], [class*="text-[7px]"], [class*="text-[8px]"], [class*="text-[9px]"], [class*="text-[10px]"], [class*="text-[11px]"], [class*="text-[12px]"], [class*="text-[13px]"] { font-size: 14px !important; line-height: 1.4 !important; }
+.text-xs { font-size: 14px !important; line-height: 1.4 !important; }
+.text-sm { font-size: 15px !important; line-height: 1.45 !important; }
+th { font-size: 14px; font-weight: 700; }
+td { font-size: 14px; }
+input, select, textarea { min-height: 40px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #59ab42; outline-offset: 2px; }
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  th, td { padding: 10px 8px; }
+}
