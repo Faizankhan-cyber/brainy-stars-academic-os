@@ -1,6 +1,93 @@
 import React from 'react';
-import {Sparkles,Home,Grid3X3,UsersRound,GraduationCap,TrendingUp,ClipboardList,BookOpen,LifeBuoy,Heart,Clock3,ChevronLeft} from 'lucide-react';
-import {NavItemId} from '../types/baos';
-interface SidebarProps{activeNav:NavItemId;onNavigate:(nav:NavItemId)=>void;isOpen:boolean;onToggle:()=>void}
-const sections=[{label:'WORKSPACE',items:[{label:'Overview',nav:'home' as NavItemId,icon:Home}]},{label:'',items:[{label:'Operations',nav:'operations-teachers' as NavItemId,icon:Grid3X3},{label:'Teacher Coaching',nav:'coaching-observations' as NavItemId,icon:UsersRound},{label:'Teacher Training',nav:'coaching-academy' as NavItemId,icon:GraduationCap}]},{label:'ACADEMICS',items:[{label:'Academic Progress',nav:'academics-progress' as NavItemId,icon:TrendingUp},{label:'Assessments',nav:'academics-assessments' as NavItemId,icon:ClipboardList},{label:'Syllabus Tracker',nav:'academics-syllabus' as NavItemId,icon:BookOpen},{label:'Student Support',nav:'academics-interventions' as NavItemId,icon:LifeBuoy}]},{label:'COMMUNITY',items:[{label:'Parent Partnerships',nav:'parents-ptm' as NavItemId,icon:Heart},{label:'Leadership & Reports',nav:'leadership-executive' as NavItemId,icon:Clock3}]}];
-export const Sidebar:React.FC<SidebarProps>=({activeNav,onNavigate,isOpen,onToggle})=><><div onClick={onToggle} className={`fixed inset-0 z-40 bg-black/35 lg:hidden ${isOpen?'block':'hidden'}`}/><aside className={`fixed inset-y-0 left-0 z-50 flex w-48 flex-col border-r border-[#431750] bg-[#512064] text-white transition-transform duration-200 ${isOpen?'translate-x-0':'-translate-x-full lg:translate-x-0'}`}><div className="mx-2.5 flex h-[59px] shrink-0 items-center gap-2 border-b border-white/15 px-1.5"><div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-[#59ab42] text-white"><Sparkles className="h-5 w-5 fill-white/20"/></div><div className="min-w-0 flex-1"><p className="text-[10px] font-extrabold leading-4 tracking-[.04em]">BRAINY STARS</p><p className="text-[6px] font-medium tracking-[.02em] text-white/80">ACADEMIC OPERATING SYSTEM</p></div><button onClick={onToggle} className="lg:hidden"><ChevronLeft className="h-4 w-4"/></button></div><nav className="flex-1 space-y-[17px] overflow-y-auto px-[10px] py-[14px]">{sections.map((section,i)=><section key={section.label||'section-'+i} className="space-y-[5px]">{section.label&&<p className="px-1 pb-1 text-[7px] font-semibold tracking-[.08em] text-white/65">{section.label}</p>}{section.items.map(item=>{const active=activeNav===item.nav;const Icon=item.icon;return <button key={item.nav} onClick={()=>{onNavigate(item.nav);onToggle()}} className={`flex h-[31px] w-full items-center gap-2 rounded-[7px] px-2 text-left text-[9px] transition ${active?'bg-[#59ab42] font-semibold text-white shadow-sm':'text-white/90 hover:bg-white/10'}`}><Icon className="h-[12px] w-[12px] shrink-0"/><span className="truncate">{item.label}</span></button>})}</section>)}</nav><div className="m-[5px] flex h-[48px] shrink-0 items-center gap-2 rounded-[10px] bg-white/10 px-2"><div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#59ab42] text-[9px] font-bold text-white">AT</div><div className="min-w-0"><p className="truncate text-[8px] font-semibold text-white">Academic In-Charge</p><p className="mt-0.5 truncate text-[7px] text-white/65">Brainy Stars School</p></div></div></aside></>;
+import {
+  Sparkles, Home, UsersRound, GraduationCap, TrendingUp, ClipboardList,
+  BookOpen, LifeBuoy, Heart, Clock3, ChevronLeft, CalendarDays, GitBranch,
+  FileText, Eye, ClipboardCheck, BookMarked, UserRoundCog, Settings,
+} from 'lucide-react';
+import { NavItemId } from '../types/baos';
+
+interface SidebarProps {
+  activeNav: NavItemId;
+  onNavigate: (nav: NavItemId) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+const sections = [
+  { label: 'DASHBOARD', items: [
+    { label: 'Executive Overview', nav: 'home' as NavItemId, icon: Home },
+  ]},
+  { label: 'OPERATIONS', items: [
+    { label: 'Teacher Database', nav: 'operations-teachers' as NavItemId, icon: UsersRound },
+    { label: 'Teacher Attendance', nav: 'operations-attendance' as NavItemId, icon: ClipboardCheck },
+    { label: 'Timetable Management', nav: 'operations-timetable' as NavItemId, icon: CalendarDays },
+    { label: 'Substitution Engine', nav: 'operations-substitution' as NavItemId, icon: GitBranch },
+    { label: 'Daily Academic Report', nav: 'operations-daily-report' as NavItemId, icon: FileText },
+    { label: 'Branch Operations', nav: 'operations-branch' as NavItemId, icon: BookMarked },
+  ]},
+  { label: 'TEACHER DEVELOPMENT', items: [
+    { label: 'Classroom Observations', nav: 'coaching-observations' as NavItemId, icon: Eye },
+    { label: 'Coaching Plans', nav: 'coaching-plans' as NavItemId, icon: Heart },
+    { label: 'Performance & Follow-up', nav: 'coaching-performance' as NavItemId, icon: TrendingUp },
+    { label: 'Teacher Training Academy', nav: 'coaching-academy' as NavItemId, icon: GraduationCap },
+  ]},
+  { label: 'ACADEMICS', items: [
+    { label: 'Academic Progress', nav: 'academics-progress' as NavItemId, icon: TrendingUp },
+    { label: 'Assessments', nav: 'academics-assessments' as NavItemId, icon: ClipboardList },
+    { label: 'Syllabus Tracker', nav: 'academics-syllabus' as NavItemId, icon: BookOpen },
+    { label: 'Student Interventions', nav: 'academics-interventions' as NavItemId, icon: LifeBuoy },
+    { label: 'Grade 9 Support', nav: 'academics-grade9' as NavItemId, icon: GraduationCap },
+    { label: 'Grade 10 Support', nav: 'academics-grade10' as NavItemId, icon: GraduationCap },
+    { label: 'RRR Sessions', nav: 'academics-rrr' as NavItemId, icon: BookMarked },
+  ]},
+  { label: 'PARENT PARTNERSHIPS', items: [
+    { label: 'PTM Tracker', nav: 'parents-ptm' as NavItemId, icon: UsersRound },
+    { label: 'Parent Communication', nav: 'parents-communication' as NavItemId, icon: Heart },
+    { label: 'Parent Concerns', nav: 'parents-concerns' as NavItemId, icon: LifeBuoy },
+  ]},
+  { label: 'LEADERSHIP', items: [
+    { label: 'Executive Reports', nav: 'leadership-executive' as NavItemId, icon: FileText },
+    { label: 'Branch Performance', nav: 'leadership-branch' as NavItemId, icon: TrendingUp },
+    { label: 'Academic Review', nav: 'leadership-review' as NavItemId, icon: ClipboardList },
+    { label: 'Leadership Actions', nav: 'leadership-actions' as NavItemId, icon: Clock3 },
+  ]},
+  { label: 'SYSTEM', items: [
+    { label: 'Settings', nav: 'settings' as NavItemId, icon: Settings },
+  ]},
+];
+
+export const Sidebar: React.FC<SidebarProps> = ({ activeNav, onNavigate, isOpen, onToggle }) => (
+  <>
+    <button aria-label="Close navigation overlay" onClick={onToggle} className={`fixed inset-0 z-40 bg-black/35 lg:hidden ${isOpen ? 'block' : 'hidden'}`} />
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-[285px] max-w-[88vw] flex-col border-r border-[#431750] bg-[#512064] text-white transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <div className="mx-3 flex min-h-[76px] shrink-0 items-center gap-3 border-b border-white/15 px-2">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#59ab42] text-white"><Sparkles className="h-6 w-6 fill-white/20" /></div>
+        <div className="min-w-0 flex-1">
+          <p className="text-base font-extrabold leading-5 tracking-wide">BRAINY STARS</p>
+          <p className="mt-1 text-xs font-medium leading-4 text-white/80">ACADEMIC OPERATING SYSTEM</p>
+        </div>
+        <button aria-label="Close navigation" onClick={onToggle} className="rounded-md p-2 hover:bg-white/10 lg:hidden"><ChevronLeft className="h-5 w-5" /></button>
+      </div>
+      <nav aria-label="Main navigation" className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
+        {sections.map((section, i) => (
+          <section key={section.label || i} className="space-y-2">
+            <p className="px-2 pb-1 text-xs font-bold tracking-[.09em] text-white/65">{section.label}</p>
+            <div className="space-y-1">
+              {section.items.map(item => {
+                const active = activeNav === item.nav;
+                const Icon = item.icon;
+                return <button key={item.nav} aria-current={active ? 'page' : undefined} onClick={() => { onNavigate(item.nav); onToggle(); }} className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm leading-5 transition ${active ? 'bg-[#59ab42] font-semibold text-white shadow-sm' : 'text-white/90 hover:bg-white/10'}`}>
+                  <Icon className="h-[18px] w-[18px] shrink-0" /><span>{item.label}</span>
+                </button>;
+              })}
+            </div>
+          </section>
+        ))}
+      </nav>
+      <div className="m-3 flex min-h-[66px] shrink-0 items-center gap-3 rounded-xl bg-white/10 px-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#59ab42] text-sm font-bold text-white">AT</div>
+        <div className="min-w-0"><p className="truncate text-sm font-semibold text-white">Academic In-Charge</p><p className="mt-1 truncate text-xs text-white/70">Brainy Stars School</p></div>
+      </div>
+    </aside>
+  </>
+);
