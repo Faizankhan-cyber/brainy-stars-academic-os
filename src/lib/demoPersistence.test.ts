@@ -26,4 +26,4 @@ describe('demo state persistence', () => {
     expect(readDemoValue(blocked, 'key', 'safe')).toBe('safe');
     expect(writeDemoValue(blocked, 'key', 'value')).toBe(false);
   });
-}
+});
