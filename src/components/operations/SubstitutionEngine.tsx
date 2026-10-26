@@ -27,14 +27,20 @@ export const SubstitutionEngine: React.FC = () => {
     teacherAttendance,
     substitutionRequests,
     assignSubstitute,
+    approveSubstitution,
+    publishSubstitutionPlan,
+    completeSubstitution,
+    resolveUncoveredSubstitution,
     selectedDate,
   } = useSchool();
 
   const [activeRequest, setActiveRequest] = useState<SubstitutionRequest | null>(null);
   const [showRuleDetailsModal, setShowRuleDetailsModal] = useState(false);
+  const [resolutionRequestId, setResolutionRequestId] = useState<string | null>(null);
+  const [resolutionNote, setResolutionNote] = useState('');
 
   const filteredRequests = substitutionRequests.filter((r) => {
-    return currentBranch === 'ALL' || r.branch === currentBranch;
+    return r.date === selectedDate && (currentBranch === 'ALL' || r.branch === currentBranch);
   });
 
   const handleSelectSubstitute = (
@@ -148,7 +154,7 @@ export const SubstitutionEngine: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                    req.status === 'Assigned'
+                    ['Assigned', 'Approved', 'Published', 'Completed'].includes(req.status)
                       ? 'bg-emerald-100 text-emerald-800'
                       : 'bg-amber-100 text-amber-800'
                   }`}
@@ -161,13 +167,25 @@ export const SubstitutionEngine: React.FC = () => {
                   className="rounded-lg bg-teal-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-teal-700 transition flex items-center gap-1.5"
                 >
                   <UserCheck className="h-4 w-4" />
-                  <span>{req.status === 'Assigned' ? 'Change Allocation' : 'Allocate via Rules'}</span>
+                  <span>{req.assignedSubstituteTeacherId ? 'Change Allocation' : 'Review Recommendations'}</span>
                 </button>
+                {req.status === 'Pending Approval' && (
+                  <button onClick={() => approveSubstitution(req.id)} className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">Approve</button>
+                )}
+                {req.status === 'Approved' && (
+                  <button onClick={() => publishSubstitutionPlan(req.branch, req.date)} className="rounded-lg border border-teal-300 bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-800 hover:bg-teal-100">Publish day</button>
+                )}
+                {req.status === 'Published' && (
+                  <button onClick={() => completeSubstitution(req.id, 'Academic In-Charge')} className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100">Mark completed</button>
+                )}
+                {!req.assignedSubstituteTeacherId && req.status !== 'Free Period Approved' && req.status !== 'Cancelled' && (
+                  <button onClick={() => { setResolutionRequestId(req.id); setResolutionNote(''); }} className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100">Resolve uncovered</button>
+                )}
               </div>
             </div>
 
             {/* Current Assignment / Evaluations Snapshot */}
-            {req.status === 'Assigned' ? (
+            {req.assignedSubstituteTeacherId ? (
               <div className="rounded-xl bg-emerald-50/80 p-3 text-xs border border-emerald-200 text-emerald-950 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase text-emerald-800 block">
@@ -195,6 +213,26 @@ export const SubstitutionEngine: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {filteredRequests.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-600">
+          No substitution requests are recorded for {selectedDate} in the selected branch. Requests are not generated automatically from attendance yet.
+        </div>
+      )}
+
+      {resolutionRequestId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl space-y-3">
+            <h3 className="font-bold text-navy-950">Record leadership resolution</h3>
+            <p className="text-xs text-slate-600">This records why the period remains uncovered or what alternative leadership has approved. It does not assign a substitute.</p>
+            <textarea value={resolutionNote} onChange={(e) => setResolutionNote(e.target.value)} rows={3} className="w-full rounded-lg border border-slate-300 p-3 text-sm" placeholder="Record the approved resolution or next action…" />
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setResolutionRequestId(null)} className="rounded-lg border px-3 py-2 text-xs font-semibold">Cancel</button>
+              <button disabled={!resolutionNote.trim()} onClick={() => { resolveUncoveredSubstitution(resolutionRequestId, resolutionNote); setResolutionRequestId(null); }} className="rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white disabled:opacity-40">Save resolution</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Allocate Substitute Modal with Explicit Rule Verification */}
       {activeRequest && (
@@ -243,6 +281,8 @@ export const SubstitutionEngine: React.FC = () => {
                         period: activeRequest.period,
                         gradeBracket: activeRequest.gradeBracket,
                         subject: activeRequest.subject,
+                        branch: activeRequest.branch,
+                        date: activeRequest.date,
                       },
                       teacherAttendance
                     );

@@ -332,17 +332,25 @@ export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = ([
  */
 export function evaluateCandidateTeacher(
   teacher: Teacher,
-  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string },
+  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string; branch?: Teacher['branch']; date?: string },
   attendanceRecords: TeacherAttendance[]
 ): SubstitutionRuleEvaluation {
   // Check attendance
-  const att = attendanceRecords.find((a) => a.teacherId === teacher.id);
+  const att = attendanceRecords.find((a) => a.teacherId === teacher.id && (!req.date || a.date === req.date));
   const attendanceStatus = att?.status || 'Present';
-  const isPresent = attendanceStatus !== 'Absent';
+  const isPresent = attendanceStatus === 'Present' || attendanceStatus === 'Late';
 
   // Check period availability (double-booking check)
   const scheduledClass = teacher.timetableSchedule[req.period];
   const isFreePeriod = scheduledClass === null;
+
+  // Active teaching staff and branch scope are hard constraints.
+  if (teacher.status !== 'Active' || teacher.employeeType === 'Non-teaching') {
+    return { teacherId: teacher.id, teacherName: teacher.name, isEligible: false, matchTier: 'Ineligible', disqualificationReason: 'Eligibility Conflict: Employee is inactive or not teaching staff.', isFreePeriod, attendanceStatus };
+  }
+  if (req.branch && teacher.branch !== req.branch) {
+    return { teacherId: teacher.id, teacherName: teacher.name, isEligible: false, matchTier: 'Ineligible', disqualificationReason: 'Branch Conflict: Cross-branch substitution requires separate approval and is not eligible for normal allocation.', isFreePeriod, attendanceStatus };
+  }
 
   // Rule 1: Mother teacher check
   if (teacher.gradeBracket === 'Mother Teacher (Grades 1-2)') {
@@ -450,7 +458,7 @@ export function evaluateCandidateTeacher(
 }
 
 export function computeEvaluationsForRequest(
-  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string },
+  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string; branch?: Teacher['branch']; date?: string },
   teachers: Teacher[],
   attendanceRecords: TeacherAttendance[]
 ): SubstitutionRuleEvaluation[] {
