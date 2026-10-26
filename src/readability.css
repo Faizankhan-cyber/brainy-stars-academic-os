@@ -8,8 +8,8 @@ th, td { font-size: 14px; line-height: 1.45; }
 .text-xs { font-size: 14px !important; line-height: 1.45 !important; }
 .text-sm { font-size: 15px !important; line-height: 1.5 !important; }
 /* Prototype used arbitrary 6–13px Tailwind sizes; raise these where classes survive compilation. */
-.text-\\[6px\\], .text-\\[7px\\], .text-\\[8px\\], .text-\\[9px\\],
-.text-\\[10px\\], .text-\\[11px\\], .text-\\[12px\\], .text-\\[13px\\] {
+.text-\[6px\], .text-\[7px\], .text-\[8px\], .text-\[9px\],
+.text-\[10px\], .text-\[11px\], .text-\[12px\], .text-\[13px\] {
   font-size: 14px !important;
   line-height: 1.45 !important;
 }

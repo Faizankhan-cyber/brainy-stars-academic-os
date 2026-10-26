@@ -94,8 +94,8 @@ const AppContent: React.FC = () => {
           isSidebarOpen={isSidebarOpen}
         />
 
-        <div className="mx-[22px] mt-[14px] flex min-h-[30px] min-w-0 items-center gap-2 rounded-[7px] border border-[#f5d47b] bg-[#fff8e5] px-2.5 text-[8px] text-[#8b4d00]">
-          <span className="flex h-[12px] w-[12px] shrink-0 items-center justify-center rounded-full border border-[#b66a12] text-[8px] font-bold">i</span>
+        <div className="mx-[22px] mt-[14px] flex min-h-[36px] min-w-0 items-center gap-2 rounded-[7px] border border-[#f5d47b] bg-[#fff8e5] px-3 py-1.5 text-xs sm:text-sm text-[#8b4d00]">
+          <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#b66a12] text-[10px] font-bold">i</span>
           <span className="font-semibold">DEMO ENVIRONMENT</span><span className="text-[#c28b38]">·</span>
           <span>Sample data only. No live school records are connected.</span>
         </div>
