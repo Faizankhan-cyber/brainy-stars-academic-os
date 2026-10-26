@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "lint": "tsc --noEmit",
     "test": "vitest run",
+    "validate:config": "node scripts/validate-vercel-config.mjs",
     "preview": "vite preview --port 3000"
   },
   "dependencies": {
