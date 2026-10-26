@@ -81,6 +81,7 @@ interface SchoolContextType {
   publishSubstitutionPlan: (branch: BranchCode, date: string) => void;
   completeSubstitution: (requestId: string, completedBy: string) => void;
   resolveUncoveredSubstitution: (requestId: string, note: string) => void;
+  generateSubstitutionRequests: (date: string, branch: BranchCode | 'ALL') => number;
   submitDAR: (dar: DailyAcademicReport) => void;
   addObservation: (obs: ClassroomObservation) => void;
   addCoachingPlan: (plan: CoachingPlan) => void;
@@ -262,6 +263,33 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       ? { ...r, status: 'Free Period Approved', resolutionNote, updatedAt: new Date().toISOString() } : r));
   };
 
+  const generateSubstitutionRequests = (date: string, branch: BranchCode | 'ALL') => {
+    const dayName = new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long' });
+    const unavailableStatuses: TeacherAttendance['status'][] = ['Absent', 'Approved Leave'];
+    const records = teacherAttendance.filter((a) => a.date === date && (branch === 'ALL' || a.branch === branch) && unavailableStatuses.includes(a.status));
+    const additions: SubstitutionRequest[] = [];
+    records.forEach((record) => {
+      const absentTeacher = teachers.find((t) => t.id === record.teacherId);
+      if (!absentTeacher || absentTeacher.status === 'Inactive' || absentTeacher.employeeType === 'Non-teaching') return;
+      const slots = (absentTeacher.weeklyTimetable || []).filter((slot) => slot.day.toLowerCase() === dayName.toLowerCase());
+      slots.forEach((slot) => {
+        const id = `auto-${date}-${record.teacherId}-${slot.period}-${slot.grade.replace(/\s+/g, '')}-${slot.section}`;
+        if (substitutionRequests.some((r) => r.id === id || (r.date === date && r.absentTeacherId === record.teacherId && r.period === slot.period && r.grade === slot.grade && r.section === slot.section))) return;
+        const gradeNum = Number((slot.grade.match(/\d+/) || ['0'])[0]);
+        const gradeBracket: SubstitutionRequest['gradeBracket'] = gradeNum >= 6 ? 'Grades 6-10' : gradeNum >= 3 ? 'Grades 3-5' : 'Grades 1-2';
+        additions.push({
+          id, date, absentTeacherId: absentTeacher.id, absentTeacherName: absentTeacher.name,
+          branch: record.branch, period: slot.period, timing: `Period ${slot.period}`,
+          grade: slot.grade, section: slot.section, gradeBracket, subject: slot.subject,
+          status: 'Pending Allocation', priority: 'Normal', evaluations: [],
+          approvalStatus: 'Not Submitted', updatedAt: new Date().toISOString(),
+        });
+      });
+    });
+    if (additions.length) setSubstitutionRequests((prev) => [...additions, ...prev]);
+    return additions.length;
+  };
+
   const submitDAR = (dar: DailyAcademicReport) => {
     setDailyAcademicReports((prev) => [dar, ...prev]);
     setRecentActivities((prev) => [
@@ -373,6 +401,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       publishSubstitutionPlan,
       completeSubstitution,
       resolveUncoveredSubstitution,
+      generateSubstitutionRequests,
       submitDAR,
       addObservation,
       addCoachingPlan,
