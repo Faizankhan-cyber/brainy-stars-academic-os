@@ -12,6 +12,7 @@ import { TeacherAttendanceView } from './components/operations/TeacherAttendance
 import { TimetableManagement } from './components/operations/TimetableManagement';
 import { SubstitutionEngine } from './components/operations/SubstitutionEngine';
 import { DailyAcademicReportView } from './components/operations/DailyAcademicReportView';
+import { DailyOperationsHub } from './components/operations/DailyOperationsHub';
 import { BranchOperationsView } from './components/operations/BranchOperationsView';
 // Coaching
 import { ClassroomObservationTracker } from './components/coaching/ClassroomObservationTracker';
@@ -51,6 +52,7 @@ const AppContent: React.FC = () => {
       case 'operations-timetable': return <TimetableManagement currentBranch={currentBranch} />;
       case 'operations-substitution': return <SubstitutionEngine />;
       case 'operations-daily-report': return <DailyAcademicReportView />;
+      case 'operations-daily-ops': return <DailyOperationsHub onNavigate={setActiveNav} />;
       case 'operations-branch': return <BranchOperationsView currentBranch={currentBranch} />;
       case 'coaching-observations': return <ClassroomObservationTracker currentBranch={currentBranch} />;
       case 'coaching-plans': return <TeacherCoachingPlans currentBranch={currentBranch} />;

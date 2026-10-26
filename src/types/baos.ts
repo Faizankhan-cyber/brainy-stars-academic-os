@@ -6,6 +6,7 @@ export type NavItemId =
   | 'operations-timetable'
   | 'operations-substitution'
   | 'operations-daily-report'
+  | 'operations-daily-ops'
   | 'operations-branch'
   // Coaching
   | 'coaching-observations'
