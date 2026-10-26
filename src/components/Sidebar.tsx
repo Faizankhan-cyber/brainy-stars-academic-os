@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Sparkles, Home, UsersRound, GraduationCap, TrendingUp, ClipboardList,
   BookOpen, LifeBuoy, Heart, Clock3, ChevronLeft, ChevronRight, CalendarDays, GitBranch,
-  FileText, Eye, ClipboardCheck, BookMarked, Settings,
+  FileText, Eye, ClipboardCheck, BookMarked, Settings, Activity,
 } from 'lucide-react';
 import { NavItemId } from '../types/baos';
 
@@ -22,6 +22,7 @@ const sections = [
     { label: 'Teacher Attendance', nav: 'operations-attendance' as NavItemId, icon: ClipboardCheck },
     { label: 'Timetable Management', nav: 'operations-timetable' as NavItemId, icon: CalendarDays },
     { label: 'Substitution Engine', nav: 'operations-substitution' as NavItemId, icon: GitBranch },
+    { label: 'Daily Operating System', nav: 'operations-daily-ops' as NavItemId, icon: Activity },
     { label: 'Daily Academic Report', nav: 'operations-daily-report' as NavItemId, icon: FileText },
     { label: 'Branch Operations', nav: 'operations-branch' as NavItemId, icon: BookMarked },
   ]},
