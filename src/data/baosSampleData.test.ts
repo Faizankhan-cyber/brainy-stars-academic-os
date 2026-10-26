@@ -44,7 +44,7 @@ describe('evaluateCandidateTeacher', () => {
 
   it('disqualifies a teacher whose requested period is already occupied', () => {
     const result = evaluateCandidateTeacher(
-      teacher('tch-hub-02'),
+      teacher('tch-kor-02'),
       { ...request, period: 3 },
       INITIAL_TEACHER_ATTENDANCE,
     );
@@ -56,7 +56,7 @@ describe('evaluateCandidateTeacher', () => {
 
   it('prioritizes an available subject specialist in the compatible grade bracket', () => {
     const result = evaluateCandidateTeacher(
-      teacher('tch-hub-02'),
+      teacher('tch-kor-02'),
       request,
       INITIAL_TEACHER_ATTENDANCE,
     );
@@ -69,7 +69,7 @@ describe('evaluateCandidateTeacher', () => {
 
   it('rejects teachers from incompatible grade brackets', () => {
     const result = evaluateCandidateTeacher(
-      teacher('tch-hub-03'),
+      teacher('tch-kor-03'),
       request,
       INITIAL_TEACHER_ATTENDANCE,
     );

@@ -31,7 +31,7 @@ export const BRANCHES: Branch[] = [
  *   - 'Grades 3-5' -> ONLY SUBSTITUTES IN 3-5
  *   - 'Grades 6-10' -> ONLY SUBSTITUTES IN 6-10
  */
-export const INITIAL_TEACHERS: Teacher[] = [
+export const INITIAL_TEACHERS: Teacher[] = ([
   // JAYANAGAR CAMPUS (3 Teachers)
   {
     id: 'tch-jay-01',
@@ -291,7 +291,7 @@ export const INITIAL_TEACHERS: Teacher[] = [
     joinDate: '2017-06-01',
     coachingStage: 'Master Guide',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as Teacher[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 /* 
  * 12 Teacher Attendance Records for Date 2026-10-16:
@@ -300,7 +300,7 @@ export const INITIAL_TEACHERS: Teacher[] = [
  * - 1 Absent (Ustadh Imran Siddique at JAY - triggering substitution #1)
  * Total teachers = 12. Present/OnDuty/Late = 11. Attendance rate = (11/12)*100 = 91.7%
  */
-export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = [
+export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = ([
   { id: 'att-jay-01', teacherId: 'tch-jay-01', teacherName: 'Sr. Maryam Siddiqui', branch: 'JAY', date: '2026-10-16', status: 'Present', checkIn: '07:55 AM', checkOut: '03:45 PM' },
   { id: 'att-jay-02', teacherId: 'tch-jay-02', teacherName: 'Ustadh Imran Siddique', branch: 'JAY', date: '2026-10-16', status: 'Absent', leaveType: 'Sick Leave', remarks: 'Medical leave approved; triggered period 2 & 4 substitution requests.' },
   { id: 'att-jay-03', teacherId: 'tch-jay-03', teacherName: 'Muallim Qasim Nadwi', branch: 'JAY', date: '2026-10-16', status: 'Present', checkIn: '07:50 AM', checkOut: '03:30 PM' },
@@ -316,7 +316,7 @@ export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = [
   { id: 'att-hub-01', teacherId: 'tch-hub-01', teacherName: 'Sr. Khadija Patel', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '08:00 AM', checkOut: '03:30 PM' },
   { id: 'att-hub-02', teacherId: 'tch-hub-02', teacherName: 'Ustadh Farooq Abdullah', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '07:55 AM', checkOut: '04:00 PM' },
   { id: 'att-hub-03', teacherId: 'tch-hub-03', teacherName: 'Mr. Ramesh Kumar', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '08:10 AM', checkOut: '03:45 PM' },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as TeacherAttendance[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 /**
  * RULE-BASED SUBSTITUTION ENGINE EVALUATION FUNCTION:
@@ -457,7 +457,7 @@ export function computeEvaluationsForRequest(
   return teachers.map((t) => evaluateCandidateTeacher(t, req, attendanceRecords));
 }
 
-export const INITIAL_SUBSTITUTIONS: SubstitutionRequest[] = [
+export const INITIAL_SUBSTITUTIONS: SubstitutionRequest[] = ([
   {
     id: 'sub-01',
     date: '2026-10-16',
@@ -521,9 +521,9 @@ export const INITIAL_SUBSTITUTIONS: SubstitutionRequest[] = [
       INITIAL_TEACHER_ATTENDANCE
     ),
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as SubstitutionRequest[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_DAILY_REPORTS: DailyAcademicReport[] = [
+export const INITIAL_DAILY_REPORTS: DailyAcademicReport[] = ([
   {
     id: 'dar-01',
     branch: 'JAY',
@@ -603,9 +603,9 @@ export const INITIAL_DAILY_REPORTS: DailyAcademicReport[] = [
     additionalWork: 'AV Hall projector HDMI wiring re-routed and tested.',
     closingMessage: 'Jazakallahu Khairan.',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as DailyAcademicReport[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_OBSERVATIONS: ClassroomObservation[] = [
+export const INITIAL_OBSERVATIONS: ClassroomObservation[] = ([
   {
     id: 'obs-01',
     teacherId: 'tch-jay-02',
@@ -657,9 +657,9 @@ export const INITIAL_OBSERVATIONS: ClassroomObservation[] = [
     overallRating: 'Exceeds Standards',
     nextFollowUpDate: '2026-11-05',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as ClassroomObservation[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_COACHING_PLANS: CoachingPlan[] = [
+export const INITIAL_COACHING_PLANS: CoachingPlan[] = ([
   {
     id: 'cp-01',
     teacherId: 'tch-hbr-01',
@@ -685,7 +685,7 @@ export const INITIAL_COACHING_PLANS: CoachingPlan[] = [
     progressPercent: 75,
     status: 'In Progress',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as CoachingPlan[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_TRAINING_ACADEMY: TrainingAcademySession[] = [
   {
@@ -714,7 +714,7 @@ export const INITIAL_TRAINING_ACADEMY: TrainingAcademySession[] = [
   },
 ];
 
-export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = [
+export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = ([
   {
     id: 'syl-01',
     grade: 'Grade 10',
@@ -741,9 +741,9 @@ export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = [
     status: 'On Track',
     lastLessonLogged: 'Ecosystem Balance and Food Webs',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as SyllabusProgress[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_STUDENT_INTERVENTIONS: StudentIntervention[] = [
+export const INITIAL_STUDENT_INTERVENTIONS: StudentIntervention[] = ([
   {
     id: 'int-01',
     studentName: 'Ibrahim Farooq',
@@ -786,9 +786,9 @@ export const INITIAL_STUDENT_INTERVENTIONS: StudentIntervention[] = [
     targetReviewDate: '2026-10-28',
     outcomeStatus: 'Active Intervention',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as StudentIntervention[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_SUPPORT_SESSIONS: SupportSession[] = [
+export const INITIAL_SUPPORT_SESSIONS: SupportSession[] = ([
   {
     id: 'sup-01',
     grade: 'Grade 10',
@@ -817,9 +817,9 @@ export const INITIAL_SUPPORT_SESSIONS: SupportSession[] = [
     status: 'Completed',
     venue: 'Room 401',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as SupportSession[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_RRR_SESSIONS: RRRSession[] = [
+export const INITIAL_RRR_SESSIONS: RRRSession[] = ([
   {
     id: 'rrr-01',
     tier: 'Remedial (R1)',
@@ -846,9 +846,9 @@ export const INITIAL_RRR_SESSIONS: RRRSession[] = [
     masteryAttainmentRate: 92,
     status: 'Completed',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as RRRSession[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_PTM_RECORDS: PTMRecord[] = [
+export const INITIAL_PTM_RECORDS: PTMRecord[] = ([
   {
     id: 'ptm-01',
     grade: 'Primary (Grades 1 to 5)',
@@ -873,9 +873,9 @@ export const INITIAL_PTM_RECORDS: PTMRecord[] = [
     coordinator: 'Dr. Tariq Siddiqui',
     agenda: 'Board Examination Roadmaps, Support Clinic Schedules & Holistic Stress Mitigation',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as PTMRecord[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_PARENT_COMMUNICATIONS: ParentCommunication[] = [
+export const INITIAL_PARENT_COMMUNICATIONS: ParentCommunication[] = ([
   {
     id: 'pcom-01',
     date: '2026-10-16',
@@ -900,9 +900,9 @@ export const INITIAL_PARENT_COMMUNICATIONS: ParentCommunication[] = [
     summary: 'Reviewed fraction concepts and provided parent with printable home activity sheets.',
     initiatedBy: 'Ustadh Imran Siddique',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as ParentCommunication[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_PARENT_CONCERNS: ParentConcern[] = [
+export const INITIAL_PARENT_CONCERNS: ParentConcern[] = ([
   {
     id: 'pcon-01',
     ticketNo: 'TKT-2026-081',
@@ -936,9 +936,9 @@ export const INITIAL_PARENT_CONCERNS: ParentConcern[] = [
     status: 'Under Investigation',
     slaDaysRemaining: 2,
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as ParentConcern[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
-export const INITIAL_ACTION_ITEMS: LeadershipActionItem[] = [
+export const INITIAL_ACTION_ITEMS: LeadershipActionItem[] = ([
   {
     id: 'act-01',
     title: 'Finalize CBSE Affiliation Self-Audit Documentation for Hubballi Expansion',
@@ -979,7 +979,7 @@ export const INITIAL_ACTION_ITEMS: LeadershipActionItem[] = [
     priority: 'Critical',
     status: 'In Progress',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+] as LeadershipActionItem[]).filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_RECENT_ACTIVITIES = [
   {
@@ -1022,7 +1022,7 @@ export const INITIAL_RECENT_ACTIVITIES = [
     description: 'Jayanagar Campus verified end-of-day DAR.',
     branch: 'JAY',
   },
-].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
+];
 
 // Aliases for module consumers
 export const SAMPLE_TEACHERS = INITIAL_TEACHERS;
