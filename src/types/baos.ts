@@ -119,9 +119,18 @@ export interface SubstitutionRequest {
   assignedSubstituteTeacherId?: string;
   assignedSubstituteTeacherName?: string;
   assignedRuleTier?: string;
-  status: 'Assigned' | 'Pending Allocation' | 'Free Period Approved';
+  status: 'Assigned' | 'Pending Allocation' | 'Free Period Approved' | 'Pending Approval' | 'Approved' | 'Published' | 'Completed' | 'Uncovered' | 'Cancelled';
   priority: 'Urgent' | 'Normal';
   evaluations: SubstitutionRuleEvaluation[];
+  approvalStatus?: 'Not Submitted' | 'Pending Approval' | 'Approved' | 'Rejected';
+  publishedAt?: string;
+  completedAt?: string;
+  completedBy?: string;
+  crossBranchApprovalRequired?: boolean;
+  crossBranchApproved?: boolean;
+  resolutionNote?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 export interface DailyAcademicReport {

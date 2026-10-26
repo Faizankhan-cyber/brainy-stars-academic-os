@@ -77,6 +77,10 @@ interface SchoolContextType {
   updateTeacherAttendance: (recordId: string, status: TeacherAttendance['status']) => void;
   markAllTeachersPresent: () => void;
   assignSubstitute: (requestId: string, teacherId: string, teacherName: string, ruleTier: string) => void;
+  approveSubstitution: (requestId: string) => void;
+  publishSubstitutionPlan: (branch: BranchCode, date: string) => void;
+  completeSubstitution: (requestId: string, completedBy: string) => void;
+  resolveUncoveredSubstitution: (requestId: string, note: string) => void;
   submitDAR: (dar: DailyAcademicReport) => void;
   addObservation: (obs: ClassroomObservation) => void;
   addCoachingPlan: (plan: CoachingPlan) => void;
@@ -207,7 +211,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               assignedSubstituteTeacherId: teacherId,
               assignedSubstituteTeacherName: teacherName,
               assignedRuleTier: ruleTier,
-              status: 'Assigned',
+              status: 'Pending Approval',
+              approvalStatus: 'Pending Approval',
+              crossBranchApprovalRequired: false,
+              crossBranchApproved: false,
+              updatedAt: new Date().toISOString(),
             }
           : r
       )
@@ -225,6 +233,33 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       },
       ...prev,
     ]);
+  };
+
+  const approveSubstitution = (requestId: string) => {
+    setSubstitutionRequests((prev) => prev.map((r) => {
+      if (r.id !== requestId || !r.assignedSubstituteTeacherId || r.status !== 'Pending Approval') return r;
+      if (r.crossBranchApprovalRequired && !r.crossBranchApproved) return r;
+      return { ...r, status: 'Approved', approvalStatus: 'Approved', updatedAt: new Date().toISOString() };
+    }));
+  };
+
+  const publishSubstitutionPlan = (branch: BranchCode, date: string) => {
+    setSubstitutionRequests((prev) => prev.map((r) => {
+      if (r.branch !== branch || r.date !== date || r.status !== 'Approved') return r;
+      return { ...r, status: 'Published', publishedAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    }));
+  };
+
+  const completeSubstitution = (requestId: string, completedBy: string) => {
+    setSubstitutionRequests((prev) => prev.map((r) => r.id === requestId && r.status === 'Published'
+      ? { ...r, status: 'Completed', completedAt: new Date().toISOString(), completedBy, updatedAt: new Date().toISOString() } : r));
+  };
+
+  const resolveUncoveredSubstitution = (requestId: string, note: string) => {
+    const resolutionNote = note.trim();
+    if (!resolutionNote) return;
+    setSubstitutionRequests((prev) => prev.map((r) => r.id === requestId && !r.assignedSubstituteTeacherId
+      ? { ...r, status: 'Free Period Approved', resolutionNote, updatedAt: new Date().toISOString() } : r));
   };
 
   const submitDAR = (dar: DailyAcademicReport) => {
@@ -334,6 +369,10 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updateTeacherAttendance,
       markAllTeachersPresent,
       assignSubstitute,
+      approveSubstitution,
+      publishSubstitutionPlan,
+      completeSubstitution,
+      resolveUncoveredSubstitution,
       submitDAR,
       addObservation,
       addCoachingPlan,
