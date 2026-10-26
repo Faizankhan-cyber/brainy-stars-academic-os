@@ -35,3 +35,41 @@ jobs:
         run: npm run lint
       - name: Build
         run: npm run build
+
+  migration-smoke:
+    name: PostgreSQL migration smoke test (disposable database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: bsaos_test
+          POSTGRES_PASSWORD: bsaos_test_only
+          POSTGRES_DB: bsaos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bsaos_test -d bsaos_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: bsaos_test
+      PGPASSWORD: bsaos_test_only
+      PGDATABASE: bsaos_test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Apply draft migration to disposable CI database only
+        run: psql -v ON_ERROR_STOP=1 -f db/migrations/0001_initial_schema.sql
+      - name: Assert core tables and branch constraints exist
+        run: |
+          psql -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN ('branches','app_users','user_branch_access','teachers','teacher_attendance','timetable_entries','substitution_requests','daily_academic_reports','audit_events','magic_link_tokens','app_sessions')" | grep -qx '11'
+          psql -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM branches WHERE code IN ('JAY','HBR','KOR','HUB')" | grep -qx '4'
+          psql -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM branches WHERE code = 'BNR'" | grep -qx '0'
+          psql -v ON_ERROR_STOP=1 -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"

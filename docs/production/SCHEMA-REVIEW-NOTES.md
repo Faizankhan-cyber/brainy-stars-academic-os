@@ -1,6 +1,6 @@
 # Initial PostgreSQL schema review notes
 
-The file `db/migrations/0001_initial_schema.sql` is a draft source migration only. It has **not** been executed against Neon or another shared database.
+The file `db/migrations/0001_initial_schema.sql` is a draft source migration only. It has **not** been executed against Neon or another shared database. CI now applies it only to a disposable PostgreSQL 16 service container and checks core tables and canonical branch codes.
 
 ## Deliberate design choices
 
@@ -19,7 +19,7 @@ The file `db/migrations/0001_initial_schema.sql` is a draft source migration onl
 4. Add database constraints or exclusion constraints that prevent duplicate teacher/section timetable assignments; the draft currently indexes but does not fully enforce every timetable conflict rule.
 5. Review whether a student entity/table is needed before student-linked features are migrated from their current display-name/external-ID representation.
 6. Confirm role semantics and bootstrap strategy before inserting any real user.
-7. Run the migration on an isolated disposable PostgreSQL instance, inspect the resulting schema, test rollback/recovery strategy, and verify a second clean setup.
+7. CI must apply the migration on a disposable PostgreSQL instance; production schema application remains separately authorized.
 8. Apply to Neon only after separate explicit authorization. Do not treat a successful commit as evidence that a migration was applied.
 
 ## Known gaps in this draft
