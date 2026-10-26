@@ -175,10 +175,11 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const markAllTeachersPresent = () => {
+    // Bulk marking is scoped to the selected date and branch. Never fabricate a check-in time.
     setTeacherAttendance((prev) => {
       const updated = prev.map((item) => {
-        if (currentBranch === 'ALL' || item.branch === currentBranch) {
-          return { ...item, status: 'Present' as const, checkIn: '08:00 AM' };
+        if (item.date === selectedDate && (currentBranch === 'ALL' || item.branch === currentBranch)) {
+          return { ...item, status: 'Present' as const };
         }
         return item;
       });
