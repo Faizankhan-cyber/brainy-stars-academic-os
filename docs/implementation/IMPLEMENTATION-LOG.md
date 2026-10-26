@@ -1,20 +1,22 @@
 # BSAOS implementation log
 
-## 2026-10-26 — Validation baseline and branch-code contract
+## 2026-10-26 — validation and safety baseline
 
-### Changes
-- Added a validation-only GitHub Actions workflow for unit tests, TypeScript checking, and the production build. It does not deploy, connect to Neon, or run SQL.
-- Added Vitest and a first regression suite for branch-code normalization.
-- Added `normalizeBranchCode` for import/API boundaries. It normalizes known branch codes, maps legacy `BNR` to canonical `JAY`, and rejects unknown values rather than assigning them to a default branch.
+- Added a GitHub Actions CI workflow for tests, TypeScript validation, and Vite build; no deployment commands or database operations are included in CI.
+- Added `normalizeBranchCode` for import/API boundaries. It trims and uppercases supported codes and maps legacy `BNR` to canonical `JAY`; unsupported values return `null`.
+- Added Vitest and branch normalization regression coverage.
+- Added substitution-engine regression tests for mother-teacher restrictions, absent faculty, double-booking, subject-specialist priority, and grade-bracket compatibility.
+- Verified the GitHub Actions workflow is active and that the run for the prior implementation-log commit completed successfully. The new substitution test commit must complete CI before it is considered validated.
 
-### Verification status
-- Baseline TypeScript/build workflow passed at commit `6558bf50c0b5e4d7eaedc112bc381c44e481c84f` before the new tests were added.
-- The new workflow's status has not yet been confirmed for the latest commit. Do not treat the new test suite as green until its CI run is complete.
-- Local Node.js/npm verification is unavailable in the remote shell because `npm` is not installed.
-- No database SQL was executed. No live Google Sheets/Drive data was accessed. No deployment or service provisioning was performed.
+## Explicitly not done
 
-### Next controlled stage
-1. Confirm CI passes with the new tests and add a lockfile so CI dependency resolution is reproducible.
-2. Add regression tests for substitution and Daily Academic Report validation before changing existing operational behavior.
-3. Design the PostgreSQL schema/migrations as reviewed files only; do not execute them against Neon without separate approval.
-4. Implement a server API and authentication boundary before moving module state out of the browser.
+- No Neon SQL was executed and no database migrations were applied.
+- No live Google Sheets or Drive data was read or modified.
+- No credentials or real school data were added; all application records remain demonstration data.
+- No manual Vercel deployment, paid service, trial, billing, or DNS change was initiated.
+
+## Current architecture limits
+
+- The current React `SchoolContext` keeps records in browser memory; data changes are not persisted to a backend and will reset on refresh.
+- Authentication/authorization, durable database persistence, production import validation, backups, and restore verification are not yet implemented in this repository.
+- Production readiness requires a reviewed schema and migration plan, authenticated server-side access, role/branch-level authorization, input validation, auditability, and tested recovery procedures before real data is transferred.
