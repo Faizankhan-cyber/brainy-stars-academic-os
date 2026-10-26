@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   Sparkles, Home, UsersRound, GraduationCap, TrendingUp, ClipboardList,
-  BookOpen, LifeBuoy, Heart, Clock3, ChevronLeft, CalendarDays, GitBranch,
-  FileText, Eye, ClipboardCheck, BookMarked, UserRoundCog, Settings,
+  BookOpen, LifeBuoy, Heart, Clock3, ChevronLeft, ChevronRight, CalendarDays, GitBranch,
+  FileText, Eye, ClipboardCheck, BookMarked, Settings,
 } from 'lucide-react';
 import { NavItemId } from '../types/baos';
 
@@ -59,16 +59,18 @@ const sections = [
 export const Sidebar: React.FC<SidebarProps> = ({ activeNav, onNavigate, isOpen, onToggle }) => (
   <>
     <button aria-label="Close navigation overlay" onClick={onToggle} className={`fixed inset-0 z-40 bg-black/35 lg:hidden ${isOpen ? 'block' : 'hidden'}`} />
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-[285px] max-w-[88vw] flex-col border-r border-[#431750] bg-[#512064] text-white transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+    <aside aria-label="Sidebar navigation" className={`fixed inset-y-0 left-0 z-50 flex w-[285px] shrink-0 flex-col border-r border-[#431750] bg-[#512064] text-white shadow-xl transition-transform duration-200 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="mx-3 flex min-h-[76px] shrink-0 items-center gap-3 border-b border-white/15 px-2">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#59ab42] text-white"><Sparkles className="h-6 w-6 fill-white/20" /></div>
         <div className="min-w-0 flex-1">
           <p className="text-base font-extrabold leading-5 tracking-wide">BRAINY STARS</p>
           <p className="mt-1 text-xs font-medium leading-4 text-white/80">ACADEMIC OPERATING SYSTEM</p>
         </div>
-        <button aria-label="Close navigation" onClick={onToggle} className="rounded-md p-2 hover:bg-white/10 lg:hidden"><ChevronLeft className="h-5 w-5" /></button>
+        <button aria-label="Collapse sidebar" onClick={onToggle} className="rounded-md p-2 hover:bg-white/10">
+          <ChevronLeft className="h-5 w-5" />
+        </button>
       </div>
-      <nav aria-label="Main navigation" className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
+      <nav aria-label="Main navigation" className="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {sections.map((section, i) => (
           <section key={section.label || i} className="space-y-2">
             <p className="px-2 pb-1 text-xs font-bold tracking-[.09em] text-white/65">{section.label}</p>
@@ -89,5 +91,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeNav, onNavigate, isOpen,
         <div className="min-w-0"><p className="truncate text-sm font-semibold text-white">Academic In-Charge</p><p className="mt-1 truncate text-xs text-white/70">Brainy Stars School</p></div>
       </div>
     </aside>
+    {!isOpen && <button aria-label="Open sidebar navigation" onClick={onToggle} className="fixed left-3 top-3 z-30 hidden rounded-lg bg-[#512064] p-2 text-white shadow-md lg:block"><ChevronRight className="h-5 w-5" /></button>}
   </>
 );

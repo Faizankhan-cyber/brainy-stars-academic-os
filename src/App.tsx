@@ -45,65 +45,38 @@ const AppContent: React.FC = () => {
 
   const renderActiveView = () => {
     switch (activeNav) {
-      case 'home':
-        return <HomeDashboard onNavigate={setActiveNav} />;
-      case 'operations-teachers':
-        return <TeacherMasterDatabase />;
-      case 'operations-attendance':
-        return <TeacherAttendanceView />;
-      case 'operations-timetable':
-        return <TimetableManagement currentBranch={currentBranch} />;
-      case 'operations-substitution':
-        return <SubstitutionEngine />;
-      case 'operations-daily-report':
-        return <DailyAcademicReportView />;
-      case 'operations-branch':
-        return <BranchOperationsView currentBranch={currentBranch} />;
-      case 'coaching-observations':
-        return <ClassroomObservationTracker currentBranch={currentBranch} />;
-      case 'coaching-plans':
-        return <TeacherCoachingPlans currentBranch={currentBranch} />;
-      case 'coaching-performance':
-        return <TeacherPerformanceView currentBranch={currentBranch} />;
-      case 'coaching-academy':
-        return <TeacherTrainingAcademy />;
-      case 'academics-progress':
-        return <AcademicProgressTracker currentBranch={currentBranch} />;
-      case 'academics-assessments':
-        return <AssessmentManagement currentBranch={currentBranch} />;
-      case 'academics-syllabus':
-        return <SyllabusCompletionTracker currentBranch={currentBranch} />;
-      case 'academics-interventions':
-        return <StudentInterventionTracker currentBranch={currentBranch} />;
-      case 'academics-grade9':
-        return <Grade9SupportSessions currentBranch={currentBranch} />;
-      case 'academics-grade10':
-        return <Grade10SupportSessions currentBranch={currentBranch} />;
-      case 'academics-rrr':
-        return <RRRSessionTracker currentBranch={currentBranch} />;
-      case 'parents-ptm':
-        return <PTMTracker currentBranch={currentBranch} />;
-      case 'parents-communication':
-        return <ParentCommunicationLog currentBranch={currentBranch} />;
-      case 'parents-concerns':
-        return <ParentConcernTracker currentBranch={currentBranch} />;
-      case 'leadership-executive':
-        return <ExecutiveDashboard currentBranch={currentBranch} />;
-      case 'leadership-branch':
-        return <BranchPerformance currentBranch={currentBranch} />;
-      case 'leadership-review':
-        return <AcademicReview currentBranch={currentBranch} />;
-      case 'leadership-actions':
-        return <PendingActionsFollowUp currentBranch={currentBranch} />;
-      case 'settings':
-        return <SettingsView />;
-      default:
-        return <HomeDashboard onNavigate={setActiveNav} />;
+      case 'home': return <HomeDashboard onNavigate={setActiveNav} />;
+      case 'operations-teachers': return <TeacherMasterDatabase />;
+      case 'operations-attendance': return <TeacherAttendanceView />;
+      case 'operations-timetable': return <TimetableManagement currentBranch={currentBranch} />;
+      case 'operations-substitution': return <SubstitutionEngine />;
+      case 'operations-daily-report': return <DailyAcademicReportView />;
+      case 'operations-branch': return <BranchOperationsView currentBranch={currentBranch} />;
+      case 'coaching-observations': return <ClassroomObservationTracker currentBranch={currentBranch} />;
+      case 'coaching-plans': return <TeacherCoachingPlans currentBranch={currentBranch} />;
+      case 'coaching-performance': return <TeacherPerformanceView currentBranch={currentBranch} />;
+      case 'coaching-academy': return <TeacherTrainingAcademy />;
+      case 'academics-progress': return <AcademicProgressTracker currentBranch={currentBranch} />;
+      case 'academics-assessments': return <AssessmentManagement currentBranch={currentBranch} />;
+      case 'academics-syllabus': return <SyllabusCompletionTracker currentBranch={currentBranch} />;
+      case 'academics-interventions': return <StudentInterventionTracker currentBranch={currentBranch} />;
+      case 'academics-grade9': return <Grade9SupportSessions currentBranch={currentBranch} />;
+      case 'academics-grade10': return <Grade10SupportSessions currentBranch={currentBranch} />;
+      case 'academics-rrr': return <RRRSessionTracker currentBranch={currentBranch} />;
+      case 'parents-ptm': return <PTMTracker currentBranch={currentBranch} />;
+      case 'parents-communication': return <ParentCommunicationLog currentBranch={currentBranch} />;
+      case 'parents-concerns': return <ParentConcernTracker currentBranch={currentBranch} />;
+      case 'leadership-executive': return <ExecutiveDashboard currentBranch={currentBranch} />;
+      case 'leadership-branch': return <BranchPerformance currentBranch={currentBranch} />;
+      case 'leadership-review': return <AcademicReview currentBranch={currentBranch} />;
+      case 'leadership-actions': return <PendingActionsFollowUp currentBranch={currentBranch} />;
+      case 'settings': return <SettingsView />;
+      default: return <HomeDashboard onNavigate={setActiveNav} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#faf7fb] text-[#302a35] font-sans flex flex-col">
+    <div className="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-[#faf7fb] font-sans text-[#302a35]">
       <Sidebar
         activeNav={activeNav}
         onNavigate={(nav) => {
@@ -111,21 +84,24 @@ const AppContent: React.FC = () => {
           setIsSidebarOpen(false);
         }}
         isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+        onToggle={() => setIsSidebarOpen((open) => !open)}
       />
 
-      <div className="flex-1 flex flex-col lg:pl-48 transition-all duration-300">
+      <div className={`flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300 ${isSidebarOpen ? 'lg:ml-[285px]' : 'lg:ml-0'}`}>
         <Header
           activeNav={activeNav}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
           isSidebarOpen={isSidebarOpen}
         />
 
-        <div className="mx-[22px] mt-[14px] flex min-h-[30px] items-center gap-2 rounded-[7px] border border-[#f5d47b] bg-[#fff8e5] px-2.5 text-[8px] text-[#8b4d00]"><span className="flex h-[12px] w-[12px] items-center justify-center rounded-full border border-[#b66a12] text-[8px] font-bold">i</span><span className="font-semibold">DEMO ENVIRONMENT</span><span className="text-[#c28b38]">·</span><span>Sample data only. No live school records are connected.</span></div>\n        <main className="flex-1 p-3 md:px-[22px] md:py-[15px] max-w-none w-full">
+        <div className="mx-[22px] mt-[14px] flex min-h-[30px] min-w-0 items-center gap-2 rounded-[7px] border border-[#f5d47b] bg-[#fff8e5] px-2.5 text-[8px] text-[#8b4d00]">
+          <span className="flex h-[12px] w-[12px] shrink-0 items-center justify-center rounded-full border border-[#b66a12] text-[8px] font-bold">i</span>
+          <span className="font-semibold">DEMO ENVIRONMENT</span><span className="text-[#c28b38]">·</span>
+          <span>Sample data only. No live school records are connected.</span>
+        </div>
+        <main className="min-w-0 w-full max-w-none flex-1 overflow-x-hidden p-3 md:px-[22px] md:py-[15px]">
           {renderActiveView()}
         </main>
-
-
       </div>
     </div>
   );
