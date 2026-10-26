@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSchool } from '../..';
+import { useSchool } from '../../context/SchoolContext';
 import { readDemoValue, writeDemoValue } from '../../lib/demoPersistence';
 import {
   CalendarDays,
@@ -315,7 +315,7 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
 
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   <div className="font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">{slot.time}</div>
-                  <button onClick={() => beginEdit(slot.period)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
+                  <button onClick={() => beginEdit(Number(slot.period))} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
                 </div>
               </div>
             );
