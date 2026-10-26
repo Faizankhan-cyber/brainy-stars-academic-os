@@ -17,7 +17,7 @@ const sections = [
   { label: 'DASHBOARD', items: [
     { label: 'Executive Overview', nav: 'home' as NavItemId, icon: Home },
   ]},
-  { label: 'OPERATIONS', items: [
+  { label: 'SCHOOL OPERATIONS', items: [
     { label: 'Teacher Database', nav: 'operations-teachers' as NavItemId, icon: UsersRound },
     { label: 'Teacher Attendance', nav: 'operations-attendance' as NavItemId, icon: ClipboardCheck },
     { label: 'Timetable Management', nav: 'operations-timetable' as NavItemId, icon: CalendarDays },
@@ -25,13 +25,7 @@ const sections = [
     { label: 'Daily Academic Report', nav: 'operations-daily-report' as NavItemId, icon: FileText },
     { label: 'Branch Operations', nav: 'operations-branch' as NavItemId, icon: BookMarked },
   ]},
-  { label: 'TEACHER DEVELOPMENT', items: [
-    { label: 'Classroom Observations', nav: 'coaching-observations' as NavItemId, icon: Eye },
-    { label: 'Coaching Plans', nav: 'coaching-plans' as NavItemId, icon: Heart },
-    { label: 'Performance & Follow-up', nav: 'coaching-performance' as NavItemId, icon: TrendingUp },
-    { label: 'Teacher Training Academy', nav: 'coaching-academy' as NavItemId, icon: GraduationCap },
-  ]},
-  { label: 'ACADEMICS', items: [
+  { label: 'ACADEMIC EXCELLENCE', items: [
     { label: 'Academic Progress', nav: 'academics-progress' as NavItemId, icon: TrendingUp },
     { label: 'Assessments', nav: 'academics-assessments' as NavItemId, icon: ClipboardList },
     { label: 'Syllabus Tracker', nav: 'academics-syllabus' as NavItemId, icon: BookOpen },
@@ -39,13 +33,17 @@ const sections = [
     { label: 'Grade 9 Support', nav: 'academics-grade9' as NavItemId, icon: GraduationCap },
     { label: 'Grade 10 Support', nav: 'academics-grade10' as NavItemId, icon: GraduationCap },
     { label: 'RRR Sessions', nav: 'academics-rrr' as NavItemId, icon: BookMarked },
+    { label: 'Classroom Observations', nav: 'coaching-observations' as NavItemId, icon: Eye },
+    { label: 'Coaching Plans', nav: 'coaching-plans' as NavItemId, icon: Heart },
+    { label: 'Performance & Follow-up', nav: 'coaching-performance' as NavItemId, icon: TrendingUp },
+    { label: 'Teacher Training Academy', nav: 'coaching-academy' as NavItemId, icon: GraduationCap },
   ]},
   { label: 'PARENT PARTNERSHIPS', items: [
     { label: 'PTM Tracker', nav: 'parents-ptm' as NavItemId, icon: UsersRound },
     { label: 'Parent Communication', nav: 'parents-communication' as NavItemId, icon: Heart },
     { label: 'Parent Concerns', nav: 'parents-concerns' as NavItemId, icon: LifeBuoy },
   ]},
-  { label: 'LEADERSHIP', items: [
+  { label: 'LEADERSHIP & REPORTS', items: [
     { label: 'Executive Reports', nav: 'leadership-executive' as NavItemId, icon: FileText },
     { label: 'Branch Performance', nav: 'leadership-branch' as NavItemId, icon: TrendingUp },
     { label: 'Academic Review', nav: 'leadership-review' as NavItemId, icon: ClipboardList },

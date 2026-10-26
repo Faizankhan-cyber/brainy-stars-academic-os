@@ -19,42 +19,12 @@ import {
 } from '../types/baos';
 
 export const BRANCHES: Branch[] = [
-  {
-    code: 'JAY',
-    name: 'Jayanagar Main Campus',
-    location: '4th Block, Jayanagar, Bengaluru',
-    studentCount: 420,
-    facultyCount: 3,
-    principal: 'Mrs. Shabana Parveen (M.Ed, AMI Diploma)',
-  },
-  {
-    code: 'HBR',
-    name: 'HBR Layout Campus',
-    location: '2nd Stage, HBR Layout, Bengaluru',
-    studentCount: 290,
-    facultyCount: 3,
-    principal: 'Dr. Tariq Siddiqui (Ph.D., CBSE Academician)',
-  },
-  {
-    code: 'KOR',
-    name: 'Koramangala Branch',
-    location: '5th Block, Koramangala, Bengaluru',
-    studentCount: 185,
-    facultyCount: 3,
-    principal: 'Sr. Fatima Zahra (Montessori Master Coach)',
-  },
-  {
-    code: 'HUB',
-    name: 'Hubballi Campus',
-    location: 'Gokul Road, Hubballi, Karnataka',
-    studentCount: 210,
-    facultyCount: 3,
-    principal: 'Ustadh Farooq Abdullah (M.Sc., B.Ed.)',
-  },
+  { code: 'JAY', name: 'BNR (Jayanagar) Branch', location: '4th Block, Jayanagar, Bengaluru', studentCount: 420, facultyCount: 3, principal: 'Mrs. Shabana Parveen (M.Ed, AMI Diploma)' },
+  { code: 'KOR', name: 'Kormangala Branch (KMR)', location: '5th Block, Koramangala, Bengaluru', studentCount: 185, facultyCount: 3, principal: 'Sr. Fatima Zahra (Montessori Master Coach)' },
 ];
 
 /* 
- * 12 Faculty Members across 4 campuses:
+ * Demo faculty records for the two retained campuses:
  * - 3 per campus
  * - Clear Grade Brackets:
  *   - 'Mother Teacher (Grades 1-2)' -> STRICTLY BARRED FROM SUBSTITUTION
@@ -321,7 +291,7 @@ export const INITIAL_TEACHERS: Teacher[] = [
     joinDate: '2017-06-01',
     coachingStage: 'Master Guide',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 /* 
  * 12 Teacher Attendance Records for Date 2026-10-16:
@@ -346,7 +316,7 @@ export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = [
   { id: 'att-hub-01', teacherId: 'tch-hub-01', teacherName: 'Sr. Khadija Patel', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '08:00 AM', checkOut: '03:30 PM' },
   { id: 'att-hub-02', teacherId: 'tch-hub-02', teacherName: 'Ustadh Farooq Abdullah', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '07:55 AM', checkOut: '04:00 PM' },
   { id: 'att-hub-03', teacherId: 'tch-hub-03', teacherName: 'Mr. Ramesh Kumar', branch: 'HUB', date: '2026-10-16', status: 'Present', checkIn: '08:10 AM', checkOut: '03:45 PM' },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 /**
  * RULE-BASED SUBSTITUTION ENGINE EVALUATION FUNCTION:
@@ -551,7 +521,7 @@ export const INITIAL_SUBSTITUTIONS: SubstitutionRequest[] = [
       INITIAL_TEACHER_ATTENDANCE
     ),
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_DAILY_REPORTS: DailyAcademicReport[] = [
   {
@@ -633,7 +603,7 @@ export const INITIAL_DAILY_REPORTS: DailyAcademicReport[] = [
     additionalWork: 'AV Hall projector HDMI wiring re-routed and tested.',
     closingMessage: 'Jazakallahu Khairan.',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_OBSERVATIONS: ClassroomObservation[] = [
   {
@@ -687,7 +657,7 @@ export const INITIAL_OBSERVATIONS: ClassroomObservation[] = [
     overallRating: 'Exceeds Standards',
     nextFollowUpDate: '2026-11-05',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_COACHING_PLANS: CoachingPlan[] = [
   {
@@ -715,7 +685,7 @@ export const INITIAL_COACHING_PLANS: CoachingPlan[] = [
     progressPercent: 75,
     status: 'In Progress',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_TRAINING_ACADEMY: TrainingAcademySession[] = [
   {
@@ -771,7 +741,7 @@ export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = [
     status: 'On Track',
     lastLessonLogged: 'Ecosystem Balance and Food Webs',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_STUDENT_INTERVENTIONS: StudentIntervention[] = [
   {
@@ -816,7 +786,7 @@ export const INITIAL_STUDENT_INTERVENTIONS: StudentIntervention[] = [
     targetReviewDate: '2026-10-28',
     outcomeStatus: 'Active Intervention',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_SUPPORT_SESSIONS: SupportSession[] = [
   {
@@ -847,7 +817,7 @@ export const INITIAL_SUPPORT_SESSIONS: SupportSession[] = [
     status: 'Completed',
     venue: 'Room 401',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_RRR_SESSIONS: RRRSession[] = [
   {
@@ -876,7 +846,7 @@ export const INITIAL_RRR_SESSIONS: RRRSession[] = [
     masteryAttainmentRate: 92,
     status: 'Completed',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_PTM_RECORDS: PTMRecord[] = [
   {
@@ -903,7 +873,7 @@ export const INITIAL_PTM_RECORDS: PTMRecord[] = [
     coordinator: 'Dr. Tariq Siddiqui',
     agenda: 'Board Examination Roadmaps, Support Clinic Schedules & Holistic Stress Mitigation',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_PARENT_COMMUNICATIONS: ParentCommunication[] = [
   {
@@ -930,7 +900,7 @@ export const INITIAL_PARENT_COMMUNICATIONS: ParentCommunication[] = [
     summary: 'Reviewed fraction concepts and provided parent with printable home activity sheets.',
     initiatedBy: 'Ustadh Imran Siddique',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_PARENT_CONCERNS: ParentConcern[] = [
   {
@@ -966,7 +936,7 @@ export const INITIAL_PARENT_CONCERNS: ParentConcern[] = [
     status: 'Under Investigation',
     slaDaysRemaining: 2,
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_ACTION_ITEMS: LeadershipActionItem[] = [
   {
@@ -1009,7 +979,7 @@ export const INITIAL_ACTION_ITEMS: LeadershipActionItem[] = [
     priority: 'Critical',
     status: 'In Progress',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 export const INITIAL_RECENT_ACTIVITIES = [
   {
@@ -1052,7 +1022,7 @@ export const INITIAL_RECENT_ACTIVITIES = [
     description: 'Jayanagar Campus verified end-of-day DAR.',
     branch: 'JAY',
   },
-];
+].filter((item) => item.branch === 'JAY' || item.branch === 'KOR');
 
 // Aliases for module consumers
 export const SAMPLE_TEACHERS = INITIAL_TEACHERS;
