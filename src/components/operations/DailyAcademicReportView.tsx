@@ -31,6 +31,7 @@ export const DailyAcademicReportView: React.FC = () => {
   } = useSchool();
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [formError, setFormError] = useState('');
   const [selectedReportForPreview, setSelectedReportForPreview] = useState<DailyAcademicReport | null>(
     dailyAcademicReports[0] || null
   );
@@ -62,6 +63,27 @@ export const DailyAcademicReportView: React.FC = () => {
 
   const handleSubmitNewDAR = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
+
+    if (!formData.submittedBy.trim()) {
+      setFormError('Please enter the report submitter name.');
+      return;
+    }
+    if (
+      !Number.isInteger(formData.studentEnrolled) ||
+      !Number.isInteger(formData.studentPresent) ||
+      !Number.isInteger(formData.facultyTotal) ||
+      !Number.isInteger(formData.facultyPresent) ||
+      formData.studentEnrolled <= 0 ||
+      formData.facultyTotal <= 0 ||
+      formData.studentPresent < 0 ||
+      formData.studentPresent > formData.studentEnrolled ||
+      formData.facultyPresent < 0 ||
+      formData.facultyPresent > formData.facultyTotal
+    ) {
+      setFormError('Check attendance totals: totals must be positive whole numbers, and present counts must be between zero and the total.');
+      return;
+    }
 
     const studentAttPercent = Number(
       ((formData.studentPresent / formData.studentEnrolled) * 100).toFixed(1)
@@ -472,6 +494,11 @@ export const DailyAcademicReportView: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmitNewDAR} className="space-y-4 text-xs">
+              {formError && (
+                <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                  {formError}
+                </p>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Campus</label>
@@ -509,6 +536,9 @@ export const DailyAcademicReportView: React.FC = () => {
                     <label className="text-[10px] text-slate-500 block">Student Enrolled</label>
                     <input
                       type="number"
+                      min={1}
+                      step={1}
+                      required
                       value={formData.studentEnrolled}
                       onChange={(e) => setFormData({ ...formData, studentEnrolled: Number(e.target.value) })}
                       className="w-full rounded border border-slate-200 p-1.5"
@@ -518,6 +548,10 @@ export const DailyAcademicReportView: React.FC = () => {
                     <label className="text-[10px] text-slate-500 block">Student Present</label>
                     <input
                       type="number"
+                      min={0}
+                      max={formData.studentEnrolled}
+                      step={1}
+                      required
                       value={formData.studentPresent}
                       onChange={(e) => setFormData({ ...formData, studentPresent: Number(e.target.value) })}
                       className="w-full rounded border border-slate-200 p-1.5"
@@ -527,6 +561,9 @@ export const DailyAcademicReportView: React.FC = () => {
                     <label className="text-[10px] text-slate-500 block">Faculty Total</label>
                     <input
                       type="number"
+                      min={1}
+                      step={1}
+                      required
                       value={formData.facultyTotal}
                       onChange={(e) => setFormData({ ...formData, facultyTotal: Number(e.target.value) })}
                       className="w-full rounded border border-slate-200 p-1.5"
@@ -536,6 +573,10 @@ export const DailyAcademicReportView: React.FC = () => {
                     <label className="text-[10px] text-slate-500 block">Faculty Present</label>
                     <input
                       type="number"
+                      min={0}
+                      max={formData.facultyTotal}
+                      step={1}
+                      required
                       value={formData.facultyPresent}
                       onChange={(e) => setFormData({ ...formData, facultyPresent: Number(e.target.value) })}
                       className="w-full rounded border border-slate-200 p-1.5"
