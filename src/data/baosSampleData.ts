@@ -332,17 +332,28 @@ export const INITIAL_TEACHER_ATTENDANCE: TeacherAttendance[] = ([
  */
 export function evaluateCandidateTeacher(
   teacher: Teacher,
-  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string; branch?: Teacher['branch']; date?: string },
-  attendanceRecords: TeacherAttendance[]
+  req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string; branch?: Teacher['branch']; date?: string; requestId?: string },
+  attendanceRecords: TeacherAttendance[],
+  existingRequests: SubstitutionRequest[] = []
 ): SubstitutionRuleEvaluation {
   // Check attendance
   const att = attendanceRecords.find((a) => a.teacherId === teacher.id && (!req.date || a.date === req.date));
   const attendanceStatus = att?.status || 'Present';
   const isPresent = attendanceStatus === 'Present' || attendanceStatus === 'Late';
 
-  // Check period availability (double-booking check)
+  // Phase 3: evaluate date-specific timetable and already-assigned substitutions.
+  // The legacy period map is retained for compatibility with existing records.
   const scheduledClass = teacher.timetableSchedule[req.period];
-  const isFreePeriod = scheduledClass === null;
+  const weekday = req.date ? new Date(`${req.date}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long' }) : undefined;
+  const weeklySlot = weekday && teacher.weeklyTimetable?.find((slot) =>
+    slot.day.toLowerCase() === weekday.toLowerCase() && slot.period === req.period
+  );
+  const assignedConflict = existingRequests.find((item) =>
+    item.id !== req.requestId && item.date === req.date && item.period === req.period &&
+    item.assignedSubstituteTeacherId === teacher.id &&
+    !['Cancelled', 'Uncovered', 'Free Period Approved'].includes(item.status)
+  );
+  const isFreePeriod = !weeklySlot && scheduledClass === null && !assignedConflict;
 
   // Active teaching staff and branch scope are hard constraints.
   if (teacher.status !== 'Active' || teacher.employeeType === 'Non-teaching') {
@@ -378,14 +389,19 @@ export function evaluateCandidateTeacher(
     };
   }
 
-  // Double-booking check
+  // Double-booking check: timetable slot takes precedence, then an existing allocation.
   if (!isFreePeriod) {
+    const conflictReason = weeklySlot
+      ? `Timetable Conflict: Faculty has a ${weeklySlot.subject} slot for ${weeklySlot.grade} ${weeklySlot.section} on ${weekday}, Period ${req.period}.`
+      : assignedConflict
+        ? `Allocation Conflict: Faculty is already assigned to ${assignedConflict.grade} ${assignedConflict.section} during Period ${req.period} on ${req.date}.`
+        : `Double-Booking Conflict: Faculty is already teaching "${scheduledClass}" during Period ${req.period}.`;
     return {
       teacherId: teacher.id,
       teacherName: teacher.name,
       isEligible: false,
       matchTier: 'Ineligible',
-      disqualificationReason: `Double-Booking Conflict: Faculty is already teaching "${scheduledClass}" during Period ${req.period}.`,
+      disqualificationReason: conflictReason,
       isFreePeriod: false,
       attendanceStatus,
     };
@@ -460,9 +476,10 @@ export function evaluateCandidateTeacher(
 export function computeEvaluationsForRequest(
   req: { period: number; gradeBracket: 'Grades 1-2' | 'Grades 3-5' | 'Grades 6-10'; subject: string; branch?: Teacher['branch']; date?: string },
   teachers: Teacher[],
-  attendanceRecords: TeacherAttendance[]
+  attendanceRecords: TeacherAttendance[],
+  existingRequests: SubstitutionRequest[] = []
 ): SubstitutionRuleEvaluation[] {
-  return teachers.map((t) => evaluateCandidateTeacher(t, req, attendanceRecords));
+  return teachers.map((t) => evaluateCandidateTeacher(t, req, attendanceRecords, existingRequests));
 }
 
 export const INITIAL_SUBSTITUTIONS: SubstitutionRequest[] = ([
