@@ -114,14 +114,14 @@ const AppContent: React.FC = () => {
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      <div className="flex-1 flex flex-col lg:pl-72 transition-all duration-300">
+      <div className="flex-1 flex flex-col lg:pl-52 transition-all duration-300">
         <Header
           activeNav={activeNav}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         />
 
-        <main className="flex-1 p-4 md:p-6 xl:p-7 max-w-none w-full">
+        <main className="flex-1 p-3 md:p-4 xl:p-5 max-w-none w-full">
           {renderActiveView()}
         </main>
 

@@ -71,3 +71,6 @@ button, input, select, textarea { font: inherit; }
 .shortcut-card { min-height: 88px; }
 @media (min-width: 1536px) { .bsa-dashboard { gap: 22px; } .metric-card { min-height: 160px; } }
 @media (max-width: 639px) { .metric-card { min-height: 145px; } }
+
+/* Figma executive overview */
+.bsa-dashboard{color:#302a35}.metric-card{min-height:100px;box-shadow:0 1px 2px rgba(40,20,50,.025)}.metric-icon{border:1px solid transparent}.metric-purple{background:#f4ebf7;color:#4f1f63}.metric-green{background:#edf7e8;color:#438632}.metric-amber{background:#fff5dc;color:#a3660a}.metric-rose{background:#fff0f1;color:#c51f48}.progress-purple{background:#4f1f63}.progress-green{background:#59ab42}.progress-amber{background:#f2a51a}@media(max-width:639px){.metric-card{min-height:96px;padding:10px}}

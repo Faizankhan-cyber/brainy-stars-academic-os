@@ -57,8 +57,6 @@ export const Header: React.FC<HeaderProps> = ({
   const {
     academicYear,
     setAcademicYear,
-    term,
-    setTerm,
     selectedDate,
     setSelectedDate,
     currentBranch,
@@ -119,6 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
+          <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700"><Layers className="h-3.5 w-3.5 text-teal-600 shrink-0"/><select aria-label="Academic year" value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} className="max-w-[105px] bg-transparent font-semibold text-navy-900 focus:outline-none cursor-pointer"><option value="2025-2026">2025–2026</option><option value="2026-2027">2026–2027</option><option value="2027-2028">2027–2028</option></select></div>
           {/* Configurable Date Selector */}
           <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700">
             <Calendar className="h-3.5 w-3.5 text-teal-600 shrink-0" />
@@ -215,42 +214,6 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Sub-bar: Academic Year & Term Configuration Bar */}
-      <div className="flex flex-wrap items-center justify-between border-t border-slate-100 bg-slate-50/80 px-4 md:px-6 py-1.5 text-xs text-slate-600">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-slate-500 text-[11px]">Academic Year:</span>
-            <select
-              value={academicYear}
-              onChange={(e) => setAcademicYear(e.target.value)}
-              className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-navy-900 focus:outline-none"
-            >
-              <option value="2025-2026">2025 – 2026</option>
-              <option value="2026-2027">2026 – 2027 (Active)</option>
-              <option value="2027-2028">2027 – 2028 (Upcoming)</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-slate-500 text-[11px]">Instructional Term:</span>
-            <select
-              value={term}
-              onChange={(e) => setTerm(e.target.value as 'Term 1' | 'Term 2')}
-              className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-navy-900 focus:outline-none"
-            >
-              <option value="Term 1">Term 1 (Jun – Oct)</option>
-              <option value="Term 2">Term 2 (Nov – Mar)</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-[11px] text-slate-500">
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-          <span>
-            Current Scope: <strong>{currentBranch === 'ALL' ? 'All 4 Campuses' : currentBranch}</strong> &bull; Date: <strong>{selectedDate}</strong>
-          </span>
-        </div>
-      </div>
     </header>
   );
 };

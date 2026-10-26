@@ -126,11 +126,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggle,
 }) => {
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
-    'sec-operations': false,
-    'sec-coaching': false,
-    'sec-academics': false,
-    'sec-parents': false,
-    'sec-leadership': false,
+    'sec-operations': true,
+    'sec-coaching': true,
+    'sec-academics': true,
+    'sec-parents': true,
+    'sec-leadership': true,
   });
 
   const toggleSection = (id: string) => {
@@ -153,10 +153,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar container */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-[#49205a] text-white transition-all duration-300 ease-in-out border-r border-[#3d1b4b] ${
-          isOpen ? 'w-72 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-72'
+          isOpen ? 'w-52 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-52'
         }`}
       >
-        {/* Compact application identity — no school logo */}
+        {/* Compact application identity â no school logo */}
         <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-5 bg-[#3d1b4b]">
           <div className="min-w-0">
             <span className="block text-sm font-extrabold tracking-[0.12em] text-white">BSAOS</span>
