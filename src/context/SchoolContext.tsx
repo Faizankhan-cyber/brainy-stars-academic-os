@@ -88,8 +88,16 @@ interface SchoolContextType {
 function usePersistedDemoState<T>(key: string, initialValue: T) {
   const [state, setState] = useState<T>(() => {
     if (typeof window === 'undefined') return initialValue;
-    try { return readDemoValue(window.localStorage, key, initialValue); }
-    catch { return initialValue; }
+    try {
+      const stored = readDemoValue(window.localStorage, key, initialValue);
+      // Keep legacy demo data from removed campuses out of the active two-branch workspace.
+      if (Array.isArray(stored)) {
+        return stored.filter((item) => !item || typeof item !== 'object' ||
+          !('branch' in item) || ((item as { branch?: string }).branch !== 'HBR' && (item as { branch?: string }).branch !== 'HUB')) as T;
+      }
+      if (key === 'currentBranch' && (stored === 'HBR' || stored === 'HUB')) return 'ALL' as T;
+      return stored;
+    } catch { return initialValue; }
   });
   useEffect(() => {
     if (typeof window === 'undefined') return;
