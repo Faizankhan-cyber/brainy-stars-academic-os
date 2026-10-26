@@ -31,6 +31,7 @@ export const SubstitutionEngine: React.FC = () => {
     publishSubstitutionPlan,
     completeSubstitution,
     resolveUncoveredSubstitution,
+    generateSubstitutionRequests,
     selectedDate,
   } = useSchool();
 
@@ -38,6 +39,7 @@ export const SubstitutionEngine: React.FC = () => {
   const [showRuleDetailsModal, setShowRuleDetailsModal] = useState(false);
   const [resolutionRequestId, setResolutionRequestId] = useState<string | null>(null);
   const [resolutionNote, setResolutionNote] = useState('');
+  const [whatsAppDraft, setWhatsAppDraft] = useState('');
 
   const filteredRequests = substitutionRequests.filter((r) => {
     return r.date === selectedDate && (currentBranch === 'ALL' || r.branch === currentBranch);
@@ -69,6 +71,10 @@ export const SubstitutionEngine: React.FC = () => {
           </p>
         </div>
 
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => { const count = generateSubstitutionRequests(selectedDate, currentBranch); window.alert(`${count} new request(s) generated from recorded Absent/Approved Leave attendance and the teacher weekly timetable. Existing requests were not duplicated.`); }} className="rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white hover:bg-teal-800">Generate from attendance</button>
+          <button onClick={() => { const rows = filteredRequests.filter((r) => r.status === 'Published' || r.status === 'Approved'); const grouped = rows.reduce((acc, r) => { (acc[r.branch] ||= []).push(r); return acc; }, {} as Record<string, SubstitutionRequest[]>); setWhatsAppDraft(Object.entries(grouped).map(([branch, items]) => `*Brainy Stars — Substitution Plan*\nDate: ${selectedDate} | Branch: ${branch}\n${items.map((r) => `Period ${r.period}: ${r.grade} ${r.section} (${r.subject}) — ${r.assignedSubstituteTeacherName || 'Pending assignment'}`).join('\n')}\nPlease follow the approved allocation. Jazakallahu Khairan.`).join('\n\n') || 'No approved or published substitutions are available for the selected date and branch.'); }} className="rounded-lg border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-bold text-teal-900 hover:bg-teal-100">Prepare WhatsApp draft</button>
+        </div>
         <button
           onClick={() => setShowRuleDetailsModal(true)}
           className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 hover:border-teal-400 transition"
@@ -358,6 +364,17 @@ export const SubstitutionEngine: React.FC = () => {
                 Close Rule Inspector
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {whatsAppDraft && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/60 p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-5 shadow-xl space-y-3">
+            <h3 className="font-bold text-navy-950">Copy-ready WhatsApp message</h3>
+            <p className="text-xs text-slate-600">Review the message, then copy and send it manually. BSAOS does not access WhatsApp or send messages.</p>
+            <textarea readOnly value={whatsAppDraft} rows={10} className="w-full rounded-lg border border-slate-300 p-3 text-sm" onFocus={(e) => e.currentTarget.select()} />
+            <div className="flex justify-end"><button onClick={() => setWhatsAppDraft('')} className="rounded-lg bg-navy-900 px-4 py-2 text-xs font-bold text-white">Close</button></div>
           </div>
         </div>
       )}
