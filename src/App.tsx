@@ -47,8 +47,6 @@ const AppContent: React.FC = () => {
     switch (activeNav) {
       case 'home':
         return <HomeDashboard onNavigate={setActiveNav} />;
-
-      // Operations
       case 'operations-teachers':
         return <TeacherMasterDatabase />;
       case 'operations-attendance':
@@ -61,8 +59,6 @@ const AppContent: React.FC = () => {
         return <DailyAcademicReportView />;
       case 'operations-branch':
         return <BranchOperationsView currentBranch={currentBranch} />;
-
-      // Coaching
       case 'coaching-observations':
         return <ClassroomObservationTracker currentBranch={currentBranch} />;
       case 'coaching-plans':
@@ -71,8 +67,6 @@ const AppContent: React.FC = () => {
         return <TeacherPerformanceView currentBranch={currentBranch} />;
       case 'coaching-academy':
         return <TeacherTrainingAcademy />;
-
-      // Academics
       case 'academics-progress':
         return <AcademicProgressTracker currentBranch={currentBranch} />;
       case 'academics-assessments':
@@ -87,16 +81,12 @@ const AppContent: React.FC = () => {
         return <Grade10SupportSessions currentBranch={currentBranch} />;
       case 'academics-rrr':
         return <RRRSessionTracker currentBranch={currentBranch} />;
-
-      // Parents
       case 'parents-ptm':
         return <PTMTracker currentBranch={currentBranch} />;
       case 'parents-communication':
         return <ParentCommunicationLog currentBranch={currentBranch} />;
       case 'parents-concerns':
         return <ParentConcernTracker currentBranch={currentBranch} />;
-
-      // Leadership
       case 'leadership-executive':
         return <ExecutiveDashboard currentBranch={currentBranch} />;
       case 'leadership-branch':
@@ -105,11 +95,8 @@ const AppContent: React.FC = () => {
         return <AcademicReview currentBranch={currentBranch} />;
       case 'leadership-actions':
         return <PendingActionsFollowUp currentBranch={currentBranch} />;
-
-      // Settings
       case 'settings':
         return <SettingsView />;
-
       default:
         return <HomeDashboard onNavigate={setActiveNav} />;
     }
@@ -117,24 +104,37 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
-      {/* Left Sidebar */}
       <Sidebar
         activeNav={activeNav}
         onNavigate={(nav) => {
           setActiveNav(nav);
-          setIsSidebarOpen(false); // Close on mobile navigation
+          setIsSidebarOpen(false);
         }}
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col lg:pl-72 transition-all duration-300">
         <Header
           activeNav={activeNav}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         />
+
+        <div
+          role="status"
+          aria-label="Demonstration mode notice"
+          className="border-b border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-950 md:px-6 lg:px-8"
+        >
+          <div className="mx-auto flex max-w-7xl flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+            <span className="inline-flex w-fit items-center rounded-full bg-amber-200 px-2.5 py-1 text-xs font-bold tracking-wide text-amber-950">
+              DEMO MODE
+            </span>
+            <p>
+              Fictional sample data only. Changes are temporary and reset when this page is refreshed. No live school records are connected.
+            </p>
+          </div>
+        </div>
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           {renderActiveView()}
@@ -155,12 +155,10 @@ const AppContent: React.FC = () => {
   );
 };
 
-export const App: React.FC = () => {
-  return (
-    <SchoolProvider>
-      <AppContent />
-    </SchoolProvider>
-  );
-};
+export const App: React.FC = () => (
+  <SchoolProvider>
+    <AppContent />
+  </SchoolProvider>
+);
 
 export default App;
