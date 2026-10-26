@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSchool } from '../..';
+import { readDemoValue, writeDemoValue } from '../../lib/demoPersistence';
 import {
   CalendarDays,
   Clock,
   User,
   MapPin,
-  Filter,
-  Layers,
-  Sparkles,
+  Download,
+  FileSpreadsheet,
   Printer,
+  Pencil,
+  Save,
+  AlertTriangle,
 } from 'lucide-react';
 import { BranchCode } from '../../types/baos';
 
 interface TimetableManagementProps {
   currentBranch: BranchCode | 'ALL';
 }
+
+type EditableSlot = ScheduleSlot & { teacherId?: string };
+type SavedSchedules = Record<string, Record<string, Record<number, EditableSlot>>>;
+const STORAGE_KEY = 'timetableSchedules';
+const emptySlot = (): EditableSlot => ({ subject: '', teacher: '', room: '', category: 'CBSE' });
 
 const PERIODS = [
   { period: 1, time: '08:30 AM - 09:15 AM', label: 'Period 1' },
@@ -89,8 +98,69 @@ const SAMPLE_SCHEDULE: Record<string, Record<number, ScheduleSlot>> = {
 export const TimetableManagement: React.FC<TimetableManagementProps> = ({
   currentBranch,
 }) => {
+  const { teachers } = useSchool();
   const [selectedGrade, setSelectedGrade] = useState('Grade 3 A');
   const [activeDay, setActiveDay] = useState('Monday');
+  const [editingPeriod, setEditingPeriod] = useState<number | null>(null);
+  const [draft, setDraft] = useState<EditableSlot>(emptySlot());
+  const [savedSchedules, setSavedSchedules] = useState<SavedSchedules>(() => {
+    if (typeof window === 'undefined') return {};
+    return readDemoValue<SavedSchedules>(window.localStorage, STORAGE_KEY, {});
+  });
+  useEffect(() => {
+    if (typeof window !== 'undefined') writeDemoValue(window.localStorage, STORAGE_KEY, savedSchedules);
+  }, [savedSchedules]);
+  const branchKey = currentBranch === 'ALL' ? 'ALL' : currentBranch;
+  const scheduleKey = `${branchKey}::${selectedGrade}`;
+  const activeSchedule: Record<number, EditableSlot> = savedSchedules[scheduleKey]?.[activeDay] || SAMPLE_SCHEDULE[activeDay] || {};
+  const visibleTeacherConflicts = useMemo(() => {
+    const counts = new Map<string, number>();
+    Object.values(activeSchedule).forEach((lesson) => {
+      if (lesson.teacherId) counts.set(lesson.teacherId, (counts.get(lesson.teacherId) || 0) + 1);
+    });
+    return new Set([...counts.entries()].filter(([, count]) => count > 1).map(([id]) => id));
+  }, [activeSchedule]);
+  const saveSlot = () => {
+    if (editingPeriod === null) return;
+    const daySchedule = { ...activeSchedule, [editingPeriod]: { ...draft } };
+    setSavedSchedules((prev) => ({
+      ...prev,
+      [scheduleKey]: { ...(prev[scheduleKey] || {}), [activeDay]: daySchedule },
+    }));
+    setEditingPeriod(null);
+  };
+  const beginEdit = (period: number) => {
+    setDraft({ ...(activeSchedule[period] || emptySlot()) });
+    setEditingPeriod(period);
+  };
+
+  const getDaySchedule = (day: string): Record<number, EditableSlot> =>
+    savedSchedules[scheduleKey]?.[day] || (SAMPLE_SCHEDULE[day] as Record<number, EditableSlot> | undefined) || {};
+
+  const exportCsv = () => {
+    const rows = [['Branch', branchKey], ['Class / Section', selectedGrade], [], ['Day', 'Period', 'Time', 'Subject', 'Employee', 'Employee ID', 'Room', 'Category', 'Assignment Status']];
+    DAYS.forEach((day) => {
+      const daySchedule = getDaySchedule(day);
+      PERIODS.forEach((period) => {
+        if (typeof period.period !== 'number') {
+          rows.push([day, period.label, period.time, '', '', '', '', '', 'Not a teaching period']);
+          return;
+        }
+        const lesson = daySchedule[period.period];
+        rows.push([day, String(period.period), period.time, lesson?.subject || '', lesson?.teacher || '', lesson?.teacherId || '', lesson?.room || '', lesson?.category || '', lesson?.teacherId ? 'Linked employee' : lesson?.teacher ? 'Unlinked / illustrative entry' : 'Unassigned']);
+      });
+    });
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `timetable-${String(branchKey).toLowerCase()}-${selectedGrade.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
 
   const getBadgeColor = (category: ScheduleSlot['category']) => {
     switch (category) {
@@ -135,11 +205,20 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
             </select>
           </div>
           <button
+            onClick={exportCsv}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
+            title="Download the selected class timetable for the full week as an Excel-compatible CSV"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span>Export Excel (CSV)</span>
+          </button>
+          <button
             onClick={() => window.print()}
             className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
+            title="Print the currently selected class and day, or choose Save as PDF in the print dialog"
           >
             <Printer className="h-4 w-4" />
-            <span>Print Grid</span>
+            <span>Print / Save PDF</span>
           </button>
         </div>
       </div>
@@ -171,7 +250,7 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
             </h3>
           </div>
           <span className="text-[11px] font-semibold text-slate-500">
-            6 Academic Periods &bull; Zero Conflict Verified
+            {Object.values(activeSchedule).filter((lesson) => lesson.subject).length} assigned periods · Demo-only schedule
           </span>
         </div>
 
@@ -193,12 +272,13 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
               );
             }
 
-            const lesson = SAMPLE_SCHEDULE[activeDay]?.[slot.period];
+            const lesson = activeSchedule[slot.period];
+            const teacherConflict = !!lesson?.teacherId && visibleTeacherConflicts.has(lesson.teacherId);
 
             return (
               <div
                 key={idx}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3.5 hover:bg-white hover:border-teal-400 hover:shadow-sm transition"
+                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border ${teacherConflict ? 'border-rose-400 bg-rose-50' : 'border-slate-200 bg-slate-50/50'} p-3.5 hover:bg-white hover:border-teal-400 hover:shadow-sm transition`}
               >
                 <div className="flex items-start sm:items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-900 text-white font-bold text-xs shrink-0">
@@ -222,7 +302,7 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
                     <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 mt-1">
                       <span className="flex items-center gap-1">
                         <User className="h-3 w-3 text-slate-400" />
-                        {lesson?.teacher || 'Unassigned'}
+                        {lesson?.teacher || 'Unassigned'}{teacherConflict ? ' · PERIOD CONFLICT' : ''}
                       </span>
                       <span>&bull;</span>
                       <span className="flex items-center gap-1">
@@ -233,14 +313,29 @@ export const TimetableManagement: React.FC<TimetableManagementProps> = ({
                   </div>
                 </div>
 
-                <div className="self-end sm:self-center font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
-                  {slot.time}
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  <div className="font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">{slot.time}</div>
+                  <button onClick={() => beginEdit(slot.period)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-teal-400" aria-label={`Edit period ${slot.period}`}><Pencil className="h-3 w-3" /> Edit</button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+      {editingPeriod !== null && (
+        <div role="dialog" aria-modal="true" aria-label={`Edit period ${editingPeriod}`} className="rounded-xl border border-teal-200 bg-teal-50/50 p-4 space-y-3">
+          <div className="flex items-center justify-between"><h3 className="font-bold text-sm text-navy-950">Edit {activeDay} · Period {editingPeriod} · {selectedGrade}</h3><span className="text-[10px] text-slate-500">Branch: {branchKey}</span></div>
+          <p className="text-xs text-slate-600">Changes are saved to this browser's demo storage only. Exported files may include illustrative sample entries until reviewed and replaced with approved school data.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="text-xs font-semibold text-slate-700">Subject<input value={draft.subject} onChange={(e) => setDraft((p) => ({ ...p, subject: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Enter subject" /></label>
+            <label className="text-xs font-semibold text-slate-700">Assigned employee<select value={draft.teacherId || ''} onChange={(e) => { const t = teachers.find((item) => item.id === e.target.value); setDraft((p) => ({ ...p, teacherId: t?.id || undefined, teacher: t?.name || '' })); }} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option value="">Unassigned / external entry</option>{teachers.filter((t) => t.status === 'Active' && (currentBranch === 'ALL' || t.branch === currentBranch)).map((t) => <option key={t.id} value={t.id}>{t.code} · {t.name}</option>)}</select></label>
+            <label className="text-xs font-semibold text-slate-700">Room / learning space<input value={draft.room} onChange={(e) => setDraft((p) => ({ ...p, room: e.target.value }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Room / lab" /></label>
+            <label className="text-xs font-semibold text-slate-700">Category<select value={draft.category} onChange={(e) => setDraft((p) => ({ ...p, category: e.target.value as ScheduleSlot['category'] }))} className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"><option>Montessori</option><option>CBSE</option><option>Values/Islamic</option><option>Sports/Arts</option></select></label>
+          </div>
+          <div className="flex gap-2"><button onClick={saveSlot} className="inline-flex items-center gap-1 rounded-lg bg-teal-700 px-3 py-2 text-xs font-bold text-white"><Save className="h-3 w-3" /> Save demo timetable</button><button onClick={() => setEditingPeriod(null)} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold">Cancel</button></div>
+        </div>
+      )}
+      <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><AlertTriangle className="h-4 w-4 shrink-0" /><p><strong>Validation scope:</strong> visible timetable only. Teacher conflict warnings can only use linked employee IDs in this class/day view; cross-class and whole-week conflict validation is not yet available. Timetable data is not yet written back to employee weekly timetables or substitution allocations.</p></div>
     </div>
   );
 };
