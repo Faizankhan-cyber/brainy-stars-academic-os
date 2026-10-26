@@ -72,6 +72,8 @@ interface SchoolContextType {
 
   // Actions
   addTeacher: (teacher: Teacher) => void;
+  updateTeacher: (teacher: Teacher) => void;
+  deleteTeacher: (teacherId: string) => boolean;
   updateTeacherAttendance: (recordId: string, status: TeacherAttendance['status']) => void;
   markAllTeachersPresent: () => void;
   assignSubstitute: (requestId: string, teacherId: string, teacherName: string, ruleTier: string) => void;
@@ -138,6 +140,20 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Handlers
   const addTeacher = (teacher: Teacher) => {
     setTeachers((prev) => [teacher, ...prev]);
+  };
+
+  const updateTeacher = (teacher: Teacher) => {
+    setTeachers((prev) => prev.map((item) => item.id === teacher.id ? teacher : item));
+  };
+
+  // Permanent deletion is allowed only when no historical or operational records depend on this employee.
+  const deleteTeacher = (teacherId: string) => {
+    const hasDependencies = teacherAttendance.some((r) => r.teacherId === teacherId) ||
+      substitutionRequests.some((r) => r.absentTeacherId === teacherId || r.assignedSubstituteTeacherId === teacherId || r.evaluations.some((e) => e.teacherId === teacherId)) ||
+      classroomObservations.some((r) => r.teacherId === teacherId) || coachingPlans.some((r) => r.teacherId === teacherId);
+    if (hasDependencies) return false;
+    setTeachers((prev) => prev.filter((item) => item.id !== teacherId));
+    return true;
   };
 
   const updateTeacherAttendance = (recordId: string, status: TeacherAttendance['status']) => {
@@ -312,6 +328,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       leadershipActionItems,
       recentActivities,
       addTeacher,
+      updateTeacher,
+      deleteTeacher,
       updateTeacherAttendance,
       markAllTeachersPresent,
       assignSubstitute,
@@ -346,6 +364,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       parentConcerns,
       leadershipActionItems,
       recentActivities,
+      updateTeacher,
+      deleteTeacher,
     ]
   );
 

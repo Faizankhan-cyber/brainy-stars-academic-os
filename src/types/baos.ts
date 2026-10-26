@@ -68,9 +68,17 @@ export interface Teacher {
   weeklyPeriods: number;
   contactNumber: string;
   email: string;
-  status: 'Active' | 'On Leave' | 'Probation';
+  status: 'Active' | 'On Leave' | 'Probation' | 'Inactive';
   joinDate: string;
   coachingStage: 'Developing' | 'Proficient' | 'Master Guide';
+  employeeType?: 'Teaching' | 'Non-teaching';
+  role?: string;
+  maxWeeklyPeriods?: number;
+  workingDays?: string[];
+  timetableStatus?: 'Pending' | 'Draft' | 'Ready';
+  academicYear?: string;
+  weeklyTimetable?: Array<{ day: string; period: number; grade: string; section: string; subject: string }>;
+  inactiveDate?: string;
 }
 
 export interface TeacherAttendance {
