@@ -87,7 +87,7 @@ export interface TeacherAttendance {
   teacherName: string;
   branch: BranchCode;
   date: string;
-  status: 'Present' | 'Absent' | 'On Duty' | 'Late' | 'Half Day';
+  status: 'Present' | 'Absent' | 'On Duty' | 'Late' | 'Half Day' | 'Approved Leave';
   checkIn?: string;
   checkOut?: string;
   leaveType?: 'Casual Leave' | 'Sick Leave' | 'Academic Training' | 'Emergency';
@@ -101,7 +101,7 @@ export interface SubstitutionRuleEvaluation {
   matchTier: 'Subject Specialist (Priority 1)' | 'Approved Subject Substitute (Priority 2)' | 'General Eligible Substitute (Priority 3)' | 'Ineligible';
   disqualificationReason?: string;
   isFreePeriod: boolean;
-  attendanceStatus: 'Present' | 'Absent' | 'On Duty' | 'Late' | 'Half Day';
+  attendanceStatus: 'Present' | 'Absent' | 'On Duty' | 'Late' | 'Half Day' | 'Approved Leave';
 }
 
 export interface SubstitutionRequest {
