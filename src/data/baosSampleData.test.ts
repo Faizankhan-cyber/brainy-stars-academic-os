@@ -68,10 +68,16 @@ describe('evaluateCandidateTeacher', () => {
   });
 
   it('rejects teachers from incompatible grade brackets', () => {
+    const incompatibleTeacher = teacher('tch-kor-03');
+    // Keep this test focused on grade-band eligibility; this demo teacher's
+    // On Duty attendance record is a separate availability constraint.
+    const attendanceWithoutCandidate = INITIAL_TEACHER_ATTENDANCE.filter(
+      (record) => record.teacherId !== incompatibleTeacher.id,
+    );
     const result = evaluateCandidateTeacher(
-      teacher('tch-kor-03'),
+      incompatibleTeacher,
       request,
-      INITIAL_TEACHER_ATTENDANCE,
+      attendanceWithoutCandidate,
     );
 
     expect(result.isEligible).toBe(false);
