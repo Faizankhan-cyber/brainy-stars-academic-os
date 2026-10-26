@@ -289,8 +289,10 @@ export const SubstitutionEngine: React.FC = () => {
                         subject: activeRequest.subject,
                         branch: activeRequest.branch,
                         date: activeRequest.date,
+                        requestId: activeRequest.id,
                       },
-                      teacherAttendance
+                      teacherAttendance,
+                      substitutionRequests
                     );
 
                     return (
