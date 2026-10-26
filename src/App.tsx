@@ -121,22 +121,7 @@ const AppContent: React.FC = () => {
           isSidebarOpen={isSidebarOpen}
         />
 
-        <div
-          role="status"
-          aria-label="Demonstration mode notice"
-          className="border-b border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-950 md:px-6 lg:px-8"
-        >
-          <div className="mx-auto flex max-w-7xl flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-            <span className="inline-flex w-fit items-center rounded-full bg-amber-200 px-2.5 py-1 text-xs font-bold tracking-wide text-amber-950">
-              DEMO MODE
-            </span>
-            <p>
-              Fictional sample data only. Changes are temporary and reset when this page is refreshed. No live school records are connected.
-            </p>
-          </div>
-        </div>
-
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 md:p-6 xl:p-7 max-w-none w-full">
           {renderActiveView()}
         </main>
 

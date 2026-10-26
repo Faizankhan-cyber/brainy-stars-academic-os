@@ -54,29 +54,19 @@ td, th { border-color: var(--bsaos-border); }
 ::-webkit-scrollbar-thumb { background: #c8b9d0; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #a18bad; }
 
-/* Official logo placement in the existing sidebar brand area. */
-aside > div:first-child {
-  min-height: 104px !important;
-  height: auto !important;
-  padding: 10px 12px !important;
-  background: #fff !important;
-  border-bottom: 1px solid var(--bsaos-border) !important;
-  align-items: center !important;
-}
-aside > div:first-child > div:first-child { flex: 1 1 auto; min-width: 0; }
-aside > div:first-child > div:first-child > div:first-child,
-aside > div:first-child > div:first-child > div:nth-child(2) { display: none !important; }
-aside > div:first-child > div:first-child::before {
-  content: "";
-  display: block;
-  width: 100%;
-  max-width: 220px;
-  height: 82px;
-  background: url('/brainy-stars-logo.png') center / contain no-repeat;
-}
-aside > div:first-child > button { color: var(--bsaos-purple) !important; }
-
 /* Reduce visual noise and keep controls consistent. */
 button, input, select, textarea { accent-color: var(--bsaos-green); }
 input, select, textarea { border-color: var(--bsaos-border); }
 button { transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 140ms ease; }
+
+/* Shared application shell and dashboard polish */
+:root { color-scheme: light; }
+html, body, #root { min-height: 100%; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+@media (min-width: 1024px) {
+  aside { box-shadow: 8px 0 28px -24px rgba(28, 12, 38, .65); }
+}
+@media (max-width: 1023px) {
+  main { padding-bottom: 1.5rem; }
+}

@@ -28,7 +28,6 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
-  Stars,
 } from 'lucide-react';
 import { NavItemId } from '../types/baos';
 
@@ -157,36 +156,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isOpen ? 'w-72 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-72'
         }`}
       >
-        {/* Top Logo & App identity */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-4 bg-[#3d1b4b]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#59ac43] text-white shadow-sm">
-              <Stars className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-black tracking-wide text-white flex items-center gap-1.5">
-                BAOS
-                <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/90 uppercase tracking-wider">
-                  OS v1.0
-                </span>
-              </span>
-              <span className="text-[10px] text-slate-400 font-medium truncate max-w-[170px]">
-                Brainy Stars Montessori
-              </span>
-            </div>
+        {/* Compact application identity — no school logo */}
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-5 bg-[#3d1b4b]">
+          <div className="min-w-0">
+            <span className="block text-sm font-extrabold tracking-[0.12em] text-white">BSAOS</span>
+            <span className="block text-[10px] font-medium text-white/55">Academic workspace</span>
           </div>
-
           <button
             onClick={onToggle}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-navy-800 hover:text-white lg:hidden"
-            title="Close Sidebar"
+            className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white lg:hidden"
+            title="Close sidebar"
+            aria-label="Close sidebar"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
         </div>
 
         {/* Scrollable Navigation Menu */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
           {/* 1. Home Dashboard button */}
           <div>
             <button

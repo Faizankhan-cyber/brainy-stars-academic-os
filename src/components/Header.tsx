@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-700">
               <span>{pageInfo.section}</span>
               <span className="text-slate-300">/</span>
-              <span className="text-slate-500 font-normal">Brainy Stars Holistic Montessori</span>
+              <span className="text-slate-500 font-normal">Academic workspace</span>
             </div>
             <h1 className="text-lg font-bold text-navy-950 leading-tight">
               {pageInfo.title}
@@ -100,14 +100,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Center: Demonstration Data Pill Badge */}
-        <div className="hidden xl:flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-900">
-          <Info className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-          <span>Fictional Demonstration Data &bull; Factual Prototype Evaluation</span>
-        </div>
-
         {/* Right Controls: Campus, Date, Notifications, Profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Configurable Campus Selector */}
           <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition">
             <Building2 className="h-3.5 w-3.5 text-teal-600 shrink-0" />
@@ -157,9 +151,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <span className="font-semibold text-xs text-navy-900 uppercase tracking-wider">
                     Recent Activity Feed ({recentActivities.length})
-                  </span>
-                  <span className="rounded bg-teal-50 px-2 py-0.5 text-[10px] font-bold text-teal-700">
-                    Demonstration
                   </span>
                 </div>
                 <div className="divide-y divide-slate-100 text-xs max-h-72 overflow-y-auto">
@@ -211,14 +202,6 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="mt-1 inline-block rounded bg-teal-100 px-2 py-0.5 text-[10px] font-bold text-teal-800">
                     Role: Academic Directorate
                   </span>
-                </div>
-                <div className="space-y-1 text-xs text-slate-600">
-                  <div className="rounded p-2 bg-slate-50 text-[11px]">
-                    <p className="font-semibold text-slate-700">Prototype Evaluation</p>
-                    <p className="text-slate-500">
-                      Zero credentials committed. Firebase Auth & Firestore schemas staged.
-                    </p>
-                  </div>
                 </div>
                 <button
                   onClick={() => setShowProfileMenu(false)}

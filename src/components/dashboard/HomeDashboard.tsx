@@ -85,29 +85,24 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
 
   return (
     <div className="space-y-6">
-      {/* Compact, persistent disclosure: this dashboard uses sample data only. */}
-      <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-        <Info className="h-4 w-4 shrink-0 text-amber-700" />
-        <span><strong>Demo data only.</strong> No live school records are connected; changes reset when this page is refreshed.</span>
-      </div>
 
       {/* Focused welcome panel with primary daily actions */}
-      <section className="rounded-2xl border border-[#e8e2eb] bg-white p-5 shadow-sm md:p-6">
+      <section className="relative overflow-hidden rounded-2xl border border-[#49205a] bg-[#49205a] p-5 shadow-sm md:p-7">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0 space-y-2">
-            <div className="inline-flex flex-wrap items-center gap-2 rounded-full bg-[#f4edf7] px-3 py-1.5 text-xs font-semibold text-[#602a73]">
+            <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/90">
               <Sparkles className="h-3.5 w-3.5" />
               <span>{academicYear}</span><span aria-hidden="true">•</span><span>{term}</span><span aria-hidden="true">•</span>
               <span>{currentBranch === 'ALL' ? 'All Campuses' : currentBranch}</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-[#292333] md:text-3xl">Good to see you. Here is your school at a glance.</h2>
-            <p className="max-w-3xl text-sm leading-relaxed text-[#716879]">Monitor daily operations, academic progress, teacher coaching and leadership follow-ups from one place.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-white md:text-3xl">Good to see you. Here is your school at a glance.</h2>
+            <p className="max-w-3xl text-sm leading-relaxed text-white/75">Monitor daily operations, academic progress, teacher coaching and leadership follow-ups from one place.</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
             <button onClick={() => onNavigate('operations-substitution')} className="flex items-center gap-2 rounded-lg bg-[#59ac43] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#438632] focus-visible:outline-offset-2">
               <Shuffle className="h-4 w-4" /><span>Manage Substitutions</span>
             </button>
-            <button onClick={() => onNavigate('operations-daily-report')} className="flex items-center gap-2 rounded-lg border border-[#e8e2eb] bg-white px-4 py-2.5 text-sm font-semibold text-[#602a73] transition hover:bg-[#f4edf7]">
+            <button onClick={() => onNavigate('operations-daily-report')} className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15">
               <FileSpreadsheet className="h-4 w-4" /><span>Review Daily Reports</span>
             </button>
           </div>
@@ -115,11 +110,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
       </section>
 
       {/* 6 Required Summary KPI Cards (Mathematically consistent with store) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-3">
         {/* 1. Total Teachers */}
         <div
           onClick={() => onNavigate('operations-teachers')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Total Teachers</span>
@@ -140,7 +135,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
         {/* 2. Teacher Attendance */}
         <div
           onClick={() => onNavigate('operations-attendance')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Teacher Attendance</span>
@@ -184,7 +179,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
         {/* 4. Pending Daily Reports */}
         <div
           onClick={() => onNavigate('operations-daily-report')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Daily Reports (DAR)</span>
@@ -205,7 +200,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigate }) => {
         {/* 5. Classroom Observations */}
         <div
           onClick={() => onNavigate('coaching-observations')}
-          className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-teal-500 hover:shadow-md transition"
+          className="group cursor-pointer rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs hover:-translate-y-0.5 hover:border-[#59ac43] hover:shadow-md transition"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Observations</span>
