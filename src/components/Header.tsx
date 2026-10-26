@@ -22,7 +22,7 @@ interface HeaderProps {
 }
 
 const PAGE_TITLES: Record<NavItemId, { section: string; title: string }> = {
-  home: { section: 'Dashboard', title: 'Executive Overview' },
+  home: { section: 'Workspace', title: 'Executive Overview' },
   'operations-teachers': { section: 'Operations', title: 'Teacher Master Database' },
   'operations-attendance': { section: 'Operations', title: 'Teacher Attendance Registry' },
   'operations-timetable': { section: 'Operations', title: 'Timetable & Class Allocation' },
@@ -73,9 +73,9 @@ export const Header: React.FC<HeaderProps> = ({
   const pendingSubsCount = substitutionRequests.filter((s) => s.status === 'Pending Allocation').length;
 
   return (
-    <header className="sticky top-0 z-30 flex flex-col border-b border-slate-200 bg-white shadow-xs">
+    <header className="sticky top-0 z-30 border-b border-[#e8e1eb] bg-white">
       {/* Top Primary Bar */}
-      <div className="flex h-16 w-full items-center justify-between px-4 md:px-6">
+      <div className="flex min-h-[64px] w-full items-center justify-between gap-3 px-4 md:px-5">
         {/* Left: Mobile hamburger + Breadcrumb */}
         <div className="flex items-center gap-3">
           <button
@@ -87,12 +87,12 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-700">
+            <div className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.13em] text-[#438632]">
               <span>{pageInfo.section}</span>
-              <span className="text-slate-300">/</span>
-              <span className="text-slate-500 font-normal">Academic workspace</span>
+              <span className="text-[#c7bccd]">/</span>
+              <span className="text-[#817687] font-normal">Academic workspace</span>
             </div>
-            <h1 className="text-lg font-bold text-navy-950 leading-tight">
+            <h1 className="text-[18px] font-bold leading-6 tracking-tight text-[#302a35]">
               {pageInfo.title}
             </h1>
           </div>
@@ -101,14 +101,14 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Right Controls: Campus, Date, Notifications, Profile */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Configurable Campus Selector */}
-          <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition">
+          <div className="hidden md:flex items-center gap-1.5 rounded-lg border border-[#e8e1eb] bg-white px-2.5 py-2 text-[10px] text-[#302a35]">
             <Building2 className="h-3.5 w-3.5 text-teal-600 shrink-0" />
             <select
               value={currentBranch}
               onChange={(e) => setCurrentBranch(e.target.value as BranchCode | 'ALL')}
-              className="bg-transparent font-semibold text-navy-900 focus:outline-none cursor-pointer"
+              className="max-w-[115px] bg-transparent font-semibold text-[#302a35] focus:outline-none cursor-pointer"
             >
-              <option value="ALL">All Campuses ({branches.length})</option>
+              <option value="ALL">All campuses</option>
               {branches.map((b) => (
                 <option key={b.code} value={b.code}>
                   {b.name} ({b.code})
@@ -117,17 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700"><Layers className="h-3.5 w-3.5 text-teal-600 shrink-0"/><select aria-label="Academic year" value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} className="max-w-[105px] bg-transparent font-semibold text-navy-900 focus:outline-none cursor-pointer"><option value="2025-2026">2025–2026</option><option value="2026-2027">2026–2027</option><option value="2027-2028">2027–2028</option></select></div>
-          {/* Configurable Date Selector */}
-          <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700">
-            <Calendar className="h-3.5 w-3.5 text-teal-600 shrink-0" />
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-transparent text-navy-950 font-semibold text-xs focus:outline-none cursor-pointer"
-            />
-          </div>
+          <div className="hidden lg:flex items-center gap-1.5 rounded-lg border border-[#e8e1eb] bg-white px-2.5 py-2 text-[10px] text-[#302a35]"><Layers className="h-3.5 w-3.5 text-[#59ab42] shrink-0"/><select aria-label="Academic year" value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} className="max-w-[95px] bg-transparent font-semibold text-[#302a35] focus:outline-none cursor-pointer"><option value="2025-2026">2025–2026</option><option value="2026-2027">2026–2027</option><option value="2027-2028">2027–2028</option></select></div>
 
           {/* Notifications */}
           <div className="relative">
@@ -180,15 +170,15 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-slate-100 transition"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-900 font-bold text-xs text-teal-300 ring-2 ring-teal-500/30">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f4ebf7] font-bold text-[10px] text-[#4f1f63]">
                 BS
               </div>
               <div className="hidden text-left md:block">
                 <div className="flex items-center gap-1">
-                  <p className="text-xs font-bold text-navy-900">Dr. Faizan Khan</p>
+                  <p className="text-xs font-bold text-navy-900">Academic In-Charge</p>
                   <ShieldCheck className="h-3.5 w-3.5 text-teal-600" />
                 </div>
-                <p className="text-[10px] text-slate-500">Academic Director</p>
+                <p className="text-[10px] text-slate-500">Brainy Stars School</p>
               </div>
               <ChevronDown className="hidden h-3.5 w-3.5 text-slate-400 md:block" />
             </button>
