@@ -399,11 +399,11 @@ CREATE TABLE audit_events (
 CREATE INDEX audit_events_branch_created_idx ON audit_events(branch_code, created_at DESC);
 CREATE INDEX audit_events_actor_created_idx ON audit_events(actor_user_id, created_at DESC);
 
--- Seed only canonical branch codes; names/locations should be owner-reviewed before application.
+-- Demo-derived branch labels for schema smoke tests; owner must approve before production use.
 INSERT INTO branches (code, name, location) VALUES
-  ('JAY', 'Jayanagar Main Campus', 'Bengaluru'),
-  ('HBR', 'HBR Campus', 'Bengaluru'),
-  ('KOR', 'Koramangala Campus', 'Bengaluru'),
-  ('HUB', 'Hub Campus', 'Bengaluru');
+  ('JAY', 'Jayanagar Main Campus', '4th Block, Jayanagar, Bengaluru'),
+  ('HBR', 'HBR Layout Campus', '2nd Stage, HBR Layout, Bengaluru'),
+  ('KOR', 'Koramangala Branch', '5th Block, Koramangala, Bengaluru'),
+  ('HUB', 'Hubballi Campus', 'Gokul Road, Hubballi, Karnataka');
 
 COMMIT;
