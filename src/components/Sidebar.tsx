@@ -153,20 +153,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-navy-900 text-slate-200 transition-all duration-300 ease-in-out border-r border-navy-800 ${
+        className={`fixed inset-y-0 left-0 z-40 flex flex-col bg-[#49205a] text-white transition-all duration-300 ease-in-out border-r border-[#3d1b4b] ${
           isOpen ? 'w-72 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-72'
         }`}
       >
         {/* Top Logo & App identity */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-navy-800 px-4 bg-navy-950/60">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-4 bg-[#3d1b4b]">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 text-white shadow-md shadow-teal-900/40">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#59ac43] text-white shadow-sm">
               <Stars className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-black tracking-wide text-white flex items-center gap-1.5">
                 BAOS
-                <span className="rounded bg-teal-500/20 px-1.5 py-0.5 text-[9px] font-bold text-teal-300 uppercase tracking-wider">
+                <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/90 uppercase tracking-wider">
                   OS v1.0
                 </span>
               </span>
@@ -193,8 +193,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onNavigate('home')}
               className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-semibold transition-all ${
                 activeNav === 'home'
-                  ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                  : 'text-slate-300 hover:bg-navy-800 hover:text-white'
+                  ? 'bg-[#59ac43] text-white shadow-sm'
+                  : 'text-white/75 hover:bg-white/10 hover:text-white'
               }`}
             >
               <LayoutDashboard className={`h-4 w-4 ${activeNav === 'home' ? 'text-white' : 'text-teal-400'}`} />
