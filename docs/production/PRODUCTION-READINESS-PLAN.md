@@ -78,6 +78,7 @@ Each module must use server APIs and have create/read/update/delete authorizatio
 
 ### 7. Deployment and operational readiness
 
+- [x] Add baseline Vercel security headers: content-type sniffing protection, clickjacking protection, referrer policy, restrictive permissions policy, HSTS, CSP, and no-index headers.
 - [ ] Confirm Vercel production/preview separation, environment variable scope, branch protection, and deployment permissions.
 - [ ] Keep previews free of real data and use isolated demo/staging resources.
 - [ ] Validate security headers, error pages, monitoring, alerts, uptime, and incident ownership.
