@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { readDemoValue, writeDemoValue } from '../lib/demoPersistence';
 import {
   BranchCode,
   Branch,
@@ -84,33 +85,47 @@ interface SchoolContextType {
   addParentCommunication: (comm: ParentCommunication) => void;
 }
 
+function usePersistedDemoState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    if (typeof window === 'undefined') return initialValue;
+    try { return readDemoValue(window.localStorage, key, initialValue); }
+    catch { return initialValue; }
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try { writeDemoValue(window.localStorage, key, state); }
+    catch { /* Browser storage may be disabled; keep the current session usable. */ }
+  }, [key, state]);
+  return [state, setState] as const;
+}
+
 const SchoolContext = createContext<SchoolContextType | undefined>(undefined);
 
 export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // 1. Configurable School Environment Parameters
-  const [academicYear, setAcademicYear] = useState<string>('2026-2027');
-  const [term, setTerm] = useState<'Term 1' | 'Term 2'>('Term 1');
-  const [selectedDate, setSelectedDate] = useState<string>('2026-10-16');
-  const [currentBranch, setCurrentBranch] = useState<BranchCode | 'ALL'>('ALL');
+  const [academicYear, setAcademicYear] = usePersistedDemoState<string>('academicYear', '2026-2027');
+  const [term, setTerm] = usePersistedDemoState<'Term 1' | 'Term 2'>('term', 'Term 1');
+  const [selectedDate, setSelectedDate] = usePersistedDemoState<string>('selectedDate', '2026-10-16');
+  const [currentBranch, setCurrentBranch] = usePersistedDemoState<BranchCode | 'ALL'>('currentBranch', 'ALL');
 
   // 2. Central unified demonstration state
   const [branches] = useState<Branch[]>(BRANCHES);
-  const [teachers, setTeachers] = useState<Teacher[]>(INITIAL_TEACHERS);
-  const [teacherAttendance, setTeacherAttendance] = useState<TeacherAttendance[]>(INITIAL_TEACHER_ATTENDANCE);
-  const [substitutionRequests, setSubstitutionRequests] = useState<SubstitutionRequest[]>(INITIAL_SUBSTITUTIONS);
-  const [dailyAcademicReports, setDailyAcademicReports] = useState<DailyAcademicReport[]>(INITIAL_DAILY_REPORTS);
-  const [classroomObservations, setClassroomObservations] = useState<ClassroomObservation[]>(INITIAL_OBSERVATIONS);
-  const [coachingPlans, setCoachingPlans] = useState<CoachingPlan[]>(INITIAL_COACHING_PLANS);
-  const [trainingAcademySessions, setTrainingAcademySessions] = useState<TrainingAcademySession[]>(INITIAL_TRAINING_ACADEMY);
-  const [syllabusProgress, setSyllabusProgress] = useState<SyllabusProgress[]>(INITIAL_SYLLABUS_PROGRESS);
-  const [studentInterventions, setStudentInterventions] = useState<StudentIntervention[]>(INITIAL_STUDENT_INTERVENTIONS);
-  const [supportSessions, setSupportSessions] = useState<SupportSession[]>(INITIAL_SUPPORT_SESSIONS);
-  const [rrrSessions, setRRRSessions] = useState<RRRSession[]>(INITIAL_RRR_SESSIONS);
-  const [ptmRecords, setPtmRecords] = useState<PTMRecord[]>(INITIAL_PTM_RECORDS);
-  const [parentCommunications, setParentCommunications] = useState<ParentCommunication[]>(INITIAL_PARENT_COMMUNICATIONS);
-  const [parentConcerns, setParentConcerns] = useState<ParentConcern[]>(INITIAL_PARENT_CONCERNS);
-  const [leadershipActionItems, setLeadershipActionItems] = useState<LeadershipActionItem[]>(INITIAL_ACTION_ITEMS);
-  const [recentActivities, setRecentActivities] = useState(INITIAL_RECENT_ACTIVITIES);
+  const [teachers, setTeachers] = usePersistedDemoState<Teacher[]>('teachers', INITIAL_TEACHERS);
+  const [teacherAttendance, setTeacherAttendance] = usePersistedDemoState<TeacherAttendance[]>('teacherAttendance', INITIAL_TEACHER_ATTENDANCE);
+  const [substitutionRequests, setSubstitutionRequests] = usePersistedDemoState<SubstitutionRequest[]>('substitutionRequests', INITIAL_SUBSTITUTIONS);
+  const [dailyAcademicReports, setDailyAcademicReports] = usePersistedDemoState<DailyAcademicReport[]>('dailyAcademicReports', INITIAL_DAILY_REPORTS);
+  const [classroomObservations, setClassroomObservations] = usePersistedDemoState<ClassroomObservation[]>('classroomObservations', INITIAL_OBSERVATIONS);
+  const [coachingPlans, setCoachingPlans] = usePersistedDemoState<CoachingPlan[]>('coachingPlans', INITIAL_COACHING_PLANS);
+  const [trainingAcademySessions, setTrainingAcademySessions] = usePersistedDemoState<TrainingAcademySession[]>('trainingAcademySessions', INITIAL_TRAINING_ACADEMY);
+  const [syllabusProgress, setSyllabusProgress] = usePersistedDemoState<SyllabusProgress[]>('syllabusProgress', INITIAL_SYLLABUS_PROGRESS);
+  const [studentInterventions, setStudentInterventions] = usePersistedDemoState<StudentIntervention[]>('studentInterventions', INITIAL_STUDENT_INTERVENTIONS);
+  const [supportSessions, setSupportSessions] = usePersistedDemoState<SupportSession[]>('supportSessions', INITIAL_SUPPORT_SESSIONS);
+  const [rrrSessions, setRRRSessions] = usePersistedDemoState<RRRSession[]>('rrrSessions', INITIAL_RRR_SESSIONS);
+  const [ptmRecords, setPtmRecords] = usePersistedDemoState<PTMRecord[]>('ptmRecords', INITIAL_PTM_RECORDS);
+  const [parentCommunications, setParentCommunications] = usePersistedDemoState<ParentCommunication[]>('parentCommunications', INITIAL_PARENT_COMMUNICATIONS);
+  const [parentConcerns, setParentConcerns] = usePersistedDemoState<ParentConcern[]>('parentConcerns', INITIAL_PARENT_CONCERNS);
+  const [leadershipActionItems, setLeadershipActionItems] = usePersistedDemoState<LeadershipActionItem[]>('leadershipActionItems', INITIAL_ACTION_ITEMS);
+  const [recentActivities, setRecentActivities] = usePersistedDemoState('recentActivities', INITIAL_RECENT_ACTIVITIES);
 
   // Handlers
   const addTeacher = (teacher: Teacher) => {
