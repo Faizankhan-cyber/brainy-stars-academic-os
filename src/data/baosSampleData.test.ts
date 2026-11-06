@@ -45,7 +45,7 @@ describe('evaluateCandidateTeacher', () => {
   it('disqualifies a teacher whose requested period is already occupied', () => {
     const result = evaluateCandidateTeacher(
       teacher('tch-kor-02'),
-      { ...request, period: 3 },
+      { ...request, period: 4 },
       INITIAL_TEACHER_ATTENDANCE,
     );
 
@@ -55,8 +55,13 @@ describe('evaluateCandidateTeacher', () => {
   });
 
   it('prioritizes an available subject specialist in the compatible grade bracket', () => {
+    const baseTeacher = teacher('tch-kor-02');
+    const specialist = {
+      ...baseTeacher,
+      subjects: [...baseTeacher.subjects, 'General Science'],
+    };
     const result = evaluateCandidateTeacher(
-      teacher('tch-kor-02'),
+      specialist,
       request,
       INITIAL_TEACHER_ATTENDANCE,
     );
@@ -67,14 +72,44 @@ describe('evaluateCandidateTeacher', () => {
     expect(result.attendanceStatus).toBe('Present');
   });
 
-  it('rejects teachers from incompatible grade brackets', () => {
+  it('uses an approved subject substitute when no subject specialist is available', () => {
+    const baseTeacher = teacher('tch-kor-02');
+    const approvedSubstitute = {
+      ...baseTeacher,
+      approvedSubstituteSubjects: ['General Science'],
+    };
     const result = evaluateCandidateTeacher(
-      teacher('tch-kor-03'),
+      approvedSubstitute,
       request,
       INITIAL_TEACHER_ATTENDANCE,
     );
 
+    expect(result.isEligible).toBe(true);
+    expect(result.matchTier).toBe('Approved Subject Substitute (Priority 2)');
+  });
+
+  it('rejects Grades 6–10 teachers for Grades 3–5 requests', () => {
+    const attendance = INITIAL_TEACHER_ATTENDANCE.map((record) =>
+      record.teacherId === 'tch-kor-03' ? { ...record, status: 'Present' as const } : record,
+    );
+    const result = evaluateCandidateTeacher(
+      teacher('tch-kor-03'),
+      request,
+      attendance,
+    );
+
     expect(result.isEligible).toBe(false);
     expect(result.disqualificationReason).toContain('cannot substitute in Grades 3–5');
+  });
+
+  it('rejects Grades 3–5 teachers for Grades 6–10 requests', () => {
+    const result = evaluateCandidateTeacher(
+      teacher('tch-kor-02'),
+      { ...request, gradeBracket: 'Grades 6-10' },
+      INITIAL_TEACHER_ATTENDANCE,
+    );
+
+    expect(result.isEligible).toBe(false);
+    expect(result.disqualificationReason).toContain('cannot substitute in Grades 6–10');
   });
 });

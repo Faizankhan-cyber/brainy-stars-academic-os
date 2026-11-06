@@ -13,7 +13,7 @@ const withinDays = (date: string, endDate: string, days: number) => {
 };
 
 export const DailyOperationsHub: React.FC<DailyOperationsHubProps> = ({ onNavigate }) => {
-  const { selectedDate, setSelectedDate, currentBranch, branches, teachers, teacherAttendance, substitutionRequests, dailyAcademicReports, classroomObservations, syllabusProgress, leadershipActionItems, coachingPlans } = useSchool();
+  const { selectedDate, setSelectedDate, currentBranch, branches, teachers, teacherAttendance, substitutionRequests, dailyAcademicReports, classroomObservations, syllabusProgress, leadershipActionItems } = useSchool();
   const [reportWindow, setReportWindow] = useState<'daily' | 'weekly'>('daily');
   const [copied, setCopied] = useState(false);
   const branchMatches = (branch: BranchCode) => currentBranch === 'ALL' || branch === currentBranch;
@@ -71,7 +71,7 @@ export const DailyOperationsHub: React.FC<DailyOperationsHubProps> = ({ onNaviga
       'Prepared from the BSAOS demo records. Validate figures before sharing as an official management report.'
     ];
     return lines.join('\n');
-  }, [reportWindow, selectedDate, currentBranch, teachers, teacherAttendance, substitutionRequests, dailyAcademicReports, classroomObservations, syllabusProgress, leadershipActionItems, coachingPlans]);
+  }, [reportWindow, selectedDate, currentBranch, teachers, teacherAttendance, substitutionRequests, dailyAcademicReports, classroomObservations, syllabusProgress, leadershipActionItems, branches]);
 
   const copyBrief = async () => {
     try {
